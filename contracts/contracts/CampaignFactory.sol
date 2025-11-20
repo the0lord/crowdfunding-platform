@@ -311,7 +311,7 @@ contract CampaignFactory is Ownable, ReentrancyGuard {
     
     /**
      * @notice Blacklist a founder (moderator only)
-     * @param _founder Address of founder to blacklist
+6     * @param _founder Address of founder to blacklist
      * @param _reason Reason for blacklisting
      */
     function blacklistFounder(address _founder, string memory _reason) external onlyModerator {

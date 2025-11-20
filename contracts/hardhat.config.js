@@ -33,7 +33,7 @@ module.exports = {
     
     // Polygon Amoy Testnet (NEW)
     amoy: {
-      url: `https://polygon-amoy.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+      url: "https://rpc-amoy.polygon.technology/",
       chainId: 80002,
       accounts: [PRIVATE_KEY],
       gasPrice: 30000000000,
@@ -65,13 +65,7 @@ module.exports = {
   },
   
   etherscan: {
-    apiKey: {
-      polygon: POLYGONSCAN_API_KEY,
-      polygonMumbai: POLYGONSCAN_API_KEY,
-      polygonAmoy: POLYGONSCAN_API_KEY,
-      opbnb: "no-api-key-needed", // opBNBScan doesn't require API key
-      opbnbTestnet: "no-api-key-needed",
-    },
+    apiKey: POLYGONSCAN_API_KEY, // Etherscan V2 format
     customChains: [
       {
         network: "opbnb",

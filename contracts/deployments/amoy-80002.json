@@ -1,0 +1,10 @@
+{
+  "network": "amoy",
+  "chainId": 80002,
+  "factoryAddress": "0x329689BDa0286dE58E2339f8783F8400bfe435e1",
+  "platformWallet": "0x99c77b768329D681f5e94711e38741e36AF3F80e",
+  "deployer": "0x99c77b768329D681f5e94711e38741e36AF3F80e",
+  "deployedAt": "2025-11-20T10:30:33.929Z",
+  "blockNumber": null,
+  "transactionHash": "0xdeb88dbad6c6bec88191bc5bdf80e139f7f25ce43ca6c23eee5da526552ce5ed"
+}
