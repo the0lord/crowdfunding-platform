@@ -1,318 +1,73 @@
-.App {
-  min-height: 100vh;
-  color: white;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* Header */
-.header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 20px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.header .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header h1 {
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.api-status {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-}
-
-.connect-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: 2px solid white;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.connect-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-}
-
-.account-badge {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-weight: 600;
-}
-
-/* Hero Section */
-.hero {
-  padding: 80px 0;
-  text-align: center;
-}
-
-.hero h2 {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.hero p {
-  font-size: 20px;
-  opacity: 0.9;
-  margin-bottom: 40px;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin: 40px 0;
-}
-
-.stat-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 30px;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.stat-card h3 {
-  font-size: 32px;
-  margin-bottom: 8px;
-}
-
-.stat-card p {
-  opacity: 0.8;
-}
-
-.load-btn {
-  background: white;
-  color: #667eea;
-  border: none;
-  padding: 16px 48px;
-  border-radius: 30px;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.load-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
-}
-
-.load-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Campaigns Section */
-.campaigns {
-  padding: 60px 0;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.campaigns h2 {
-  text-align: center;
-  font-size: 36px;
-  margin-bottom: 40px;
-}
-
-.campaigns-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-}
-
-.campaign-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 24px;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.campaign-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-}
-
-.campaign-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: 16px;
-}
-
-.campaign-header h3 {
-  font-size: 20px;
-  flex: 1;
-}
-
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.status-active {
-  background: #4ade80;
-  color: #064e3b;
-}
-
-.status-successful {
-  background: #60a5fa;
-  color: #1e3a8a;
-}
-
-.campaign-description {
-  margin-bottom: 16px;
-  opacity: 0.9;
-  line-height: 1.6;
-}
-
-.campaign-stats {
+.app {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin: 16px 0;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--text-primary);
 }
 
-.campaign-stats div {
-  display: flex;
-  justify-content: space-between;
+.main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: calc(70px + var(--spacing-xl)) var(--spacing-md) var(--spacing-xl);
+  animation: fadeIn 0.5s ease-out;
 }
 
-.campaign-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.campaign-footer small {
-  opacity: 0.7;
-}
-
-.view-btn {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 6px 16px;
-  border-radius: 15px;
-  text-decoration: none;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-
-.view-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Features Section */
-.features {
-  padding: 80px 0;
-}
-
-.features h2 {
-  text-align: center;
-  font-size: 36px;
-  margin-bottom: 40px;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-}
-
-.feature-card {
-  text-align: center;
-  padding: 40px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: transform 0.2s;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-}
-
-.feature-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.feature-card h3 {
-  font-size: 20px;
-  margin-bottom: 12px;
-}
-
-.feature-card p {
-  opacity: 0.8;
-  line-height: 1.6;
-}
-
-/* Footer */
 .footer {
-  padding: 40px 0;
+  background-color: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: var(--spacing-2xl) 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
   text-align: center;
-  background: rgba(0, 0, 0, 0.2);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
 }
 
-.footer p {
-  opacity: 0.7;
-  margin: 8px 0;
+.footer-content p {
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.875rem;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .header .container {
-    flex-direction: column;
-    gap: 20px;
-  }
+/* Global Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: var(--text-secondary);
+}
 
-  .hero h2 {
-    font-size: 32px;
-  }
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--surface-hover);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
 
-  .stats {
-    grid-template-columns: 1fr;
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
-  .campaigns-grid {
-    grid-template-columns: 1fr;
-  }
+/* Toast Customization */
+.toast-custom {
+  background: var(--surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
 }

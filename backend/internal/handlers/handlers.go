@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
@@ -27,20 +28,29 @@ func GetCampaigns(db *gorm.DB) gin.HandlerFunc {
 		offset := (page - 1) * pageSize
 
 		// Filters
-		status := c.Query("status")
+		status := c.Query("status")       // moderation_status filter
+		campaignState := c.Query("state") // campaign state filter (Active, Successful, Failed)
 		category := c.Query("category")
 		founder := c.Query("founder")
+		search := c.Query("search")
 
 		query := db.Model(&models.Campaign{}).Preload("Founder")
 
-		if status != "" {
+		if status != "" && status != "all" {
 			query = query.Where("moderation_status = ?", status)
+		}
+		if campaignState != "" && campaignState != "all" {
+			query = query.Where("state = ?", campaignState)
 		}
 		if category != "" {
 			query = query.Where("category = ?", category)
 		}
 		if founder != "" {
 			query = query.Where("founder_address = ?", strings.ToLower(founder))
+		}
+		if search != "" {
+			searchPattern := "%" + strings.ToLower(search) + "%"
+			query = query.Where("LOWER(title) LIKE ? OR LOWER(description) LIKE ?", searchPattern, searchPattern)
 		}
 
 		var total int64
@@ -177,7 +187,7 @@ func GetContributions(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, contributions)
+		c.JSON(http.StatusOK, gin.H{"contributions": contributions})
 	}
 }
 
@@ -202,7 +212,11 @@ func CreateContribution(db *gorm.DB) gin.HandlerFunc {
 		// Normalize addresses
 		contribution.ContributorAddress = strings.ToLower(contribution.ContributorAddress)
 
-		if err := db.Create(&contribution).Error; err != nil {
+		// Start a transaction to ensure atomicity
+		tx := db.Begin()
+
+		if err := tx.Create(&contribution).Error; err != nil {
+			tx.Rollback()
 			// Check for duplicate transaction hash
 			if strings.Contains(err.Error(), "duplicate key") {
 				c.JSON(http.StatusConflict, gin.H{"error": "Contribution already recorded"})
@@ -212,6 +226,53 @@ func CreateContribution(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
+		// Update campaign's total_raised and contributor_count
+		var campaign models.Campaign
+		if err := tx.First(&campaign, contribution.CampaignID).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Campaign not found"})
+			return
+		}
+
+		// Calculate new total (handle big numbers as strings)
+		currentTotal := campaign.TotalRaised
+		if currentTotal == "" {
+			currentTotal = "0"
+		}
+
+		// Parse current total and contribution amount as big integers
+		currentTotalBig := new(big.Int)
+		currentTotalBig.SetString(currentTotal, 10)
+
+		contributionAmountBig := new(big.Int)
+		contributionAmountBig.SetString(contribution.Amount, 10)
+
+		// Add contribution to total
+		newTotal := new(big.Int).Add(currentTotalBig, contributionAmountBig)
+
+		// Check if this is a new contributor
+		var existingCount int64
+		tx.Model(&models.Contribution{}).
+			Where("campaign_id = ? AND contributor_address = ? AND id != ?",
+				contribution.CampaignID, contribution.ContributorAddress, contribution.ID).
+			Count(&existingCount)
+
+		updates := map[string]interface{}{
+			"total_raised": newTotal.String(),
+		}
+
+		// Only increment contributor count if this is their first contribution
+		if existingCount == 0 {
+			updates["contributor_count"] = gorm.Expr("contributor_count + 1")
+		}
+
+		if err := tx.Model(&campaign).Updates(updates).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update campaign"})
+			return
+		}
+
+		tx.Commit()
 		c.JSON(http.StatusCreated, contribution)
 	}
 }

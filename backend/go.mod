@@ -3,9 +3,15 @@ module github.com/the0lord/crowdfunding-platform/backend
 go 1.24.0
 
 require (
+	github.com/aws/aws-sdk-go-v2 v1.40.0
+	github.com/aws/aws-sdk-go-v2/config v1.18.45
+	github.com/aws/aws-sdk-go-v2/credentials v1.13.43
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.92.0
 	github.com/ethereum/go-ethereum v1.16.7
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/golang-jwt/jwt/v5 v5.3.0
+	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.5.1
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
@@ -15,6 +21,20 @@ require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProjectZKM/Ziren/crates/go-runtime/zkvm_runtime v0.0.0-20251001021608-1fe7b43fc4d6 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.3 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.13 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.14 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.14 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.45 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.14 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.5 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.14 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.14 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.15.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.17.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.23.2 // indirect
+	github.com/aws/smithy-go v1.23.2 // indirect
 	github.com/bits-and-blooms/bitset v1.20.0 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -36,7 +56,6 @@ require (
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/holiman/uint256 v1.3.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
