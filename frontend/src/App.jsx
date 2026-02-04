@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -11,6 +12,8 @@ import Admin from './pages/Admin';
 import './App.css';
 
 function App() {
+  const { t } = useTranslation();
+  
   return (
     <Router>
       <AuthProvider>
@@ -28,8 +31,8 @@ function App() {
           </main>
           <footer className="footer">
             <div className="footer-content">
-              <p>© 2025 CrowdFund - Decentralized Crowdfunding Platform</p>
-              <p>Built on Polygon Amoy Testnet</p>
+              <p>{t('footer.copyright')}</p>
+              <p>{t('footer.blockchain')}</p>
             </div>
           </footer>
         </div>

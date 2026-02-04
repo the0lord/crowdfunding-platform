@@ -228,11 +228,13 @@ body {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
   color: white;
   box-shadow: var(--shadow-sm), 0 2px 8px rgba(99, 102, 241, 0.25);
+  border: 1px solid transparent;
 }
 
 .btn-primary:hover {
   box-shadow: var(--shadow-md), 0 4px 16px rgba(99, 102, 241, 0.35);
   transform: translateY(-1px);
+  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
 }
 
 .btn-primary:active {
@@ -241,14 +243,17 @@ body {
 
 /* Secondary Button */
 .btn-secondary {
-  background-color: var(--surface);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-hover) 100%);
   color: var(--text-primary);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
 }
 
 .btn-secondary:hover {
-  background-color: var(--surface-hover);
+  background: linear-gradient(135deg, var(--surface-hover) 0%, var(--surface-active) 100%);
   border-color: var(--border-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Outline Button */
@@ -256,12 +261,15 @@ body {
   background-color: transparent;
   border: 1px solid var(--border);
   color: var(--text-primary);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .btn-outline:hover {
   border-color: var(--primary);
   color: var(--primary);
   background-color: var(--primary-muted);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
 }
 
 /* Ghost Button */

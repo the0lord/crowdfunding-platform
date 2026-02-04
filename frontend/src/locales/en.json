@@ -1,0 +1,148 @@
+{
+  "nav": {
+    "home": "Home",
+    "campaigns": "Campaigns",
+    "createCampaign": "Create Campaign",
+    "myDashboard": "My Dashboard",
+    "admin": "Admin",
+    "connectWallet": "Connect Wallet",
+    "connecting": "Connecting...",
+    "disconnect": "Disconnect",
+    "adminBadge": "Admin"
+  },
+  "hero": {
+    "title": "Fund the Future",
+    "titleHighlight": "Future",
+    "subtitle": "A decentralized crowdfunding platform built on blockchain technology. Support innovative projects with complete transparency.",
+    "exploreCampaigns": "Explore Campaigns",
+    "createCampaign": "Create Campaign",
+    "connectToStart": "Connect to Start"
+  },
+  "stats": {
+    "activeCampaigns": "Active Campaigns",
+    "successfulCampaigns": "Successful Campaigns",
+    "totalRaised": "Total Raised"
+  },
+  "campaigns": {
+    "title": "Featured Campaigns",
+    "viewAll": "View All Campaigns",
+    "by": "by",
+    "progress": "Progress",
+    "timeLeft": "Time left",
+    "goal": "Goal",
+    "raised": "Raised",
+    "days": "days",
+    "noData": "No campaign data"
+  },
+  "features": {
+    "title": "Why Choose CrowdFund?",
+    "decentralized": {
+      "title": "Fully Decentralized",
+      "description": "Built on blockchain with smart contracts for transparency"
+    },
+    "secure": {
+      "title": "Highly Secure",
+      "description": "Your funds are protected by cryptographic security"
+    },
+    "transparent": {
+      "title": "100% Transparent",
+      "description": "All transactions are recorded on the blockchain"
+    }
+  },
+  "buttons": {
+    "exploreCampaigns": "Explore Campaigns",
+    "viewDetails": "View Details",
+    "contribute": "Contribute",
+    "backup": "Backup Seed",
+    "loadMore": "Load More",
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "campaignList": {
+    "title": "All Campaigns",
+    "search": "Search campaigns...",
+    "filter": "Filter",
+    "sortBy": "Sort by",
+    "active": "Active",
+    "successful": "Successful",
+    "failed": "Failed",
+    "all": "All",
+    "noResults": "No campaigns found"
+  },
+  "campaignDetail": {
+    "creator": "Creator",
+    "category": "Category",
+    "description": "Description",
+    "goal": "Funding Goal",
+    "deadline": "Deadline",
+    "raised": "Amount Raised",
+    "backersCount": "Number of Backers",
+    "contribute": "Contribute Now",
+    "updates": "Updates",
+    "comments": "Comments",
+    "noUpdates": "No updates yet",
+    "enterAmount": "Enter amount in MATIC",
+    "confirm": "Confirm Contribution"
+  },
+  "createCampaign": {
+    "title": "Create Your Campaign",
+    "formTitle": "Campaign Details",
+    "campaignTitle": "Campaign Title",
+    "description": "Description",
+    "category": "Category",
+    "fundingGoal": "Funding Goal (MATIC)",
+    "deadline": "Deadline",
+    "imageUrl": "Campaign Image URL",
+    "create": "Create Campaign",
+    "success": "Campaign created successfully",
+    "error": "Error creating campaign"
+  },
+  "dashboard": {
+    "title": "My Dashboard",
+    "myCampaigns": "My Campaigns",
+    "contributions": "My Contributions",
+    "wallet": "Wallet",
+    "balance": "Balance",
+    "noCampaigns": "You haven't created any campaigns yet",
+    "noContributions": "You haven't contributed to any campaigns yet"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "campaigns": "Campaigns",
+    "pending": "Pending Approval",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "users": "Users",
+    "statistics": "Statistics",
+    "approve": "Approve",
+    "reject": "Reject",
+    "noData": "No data available"
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "unauthorized": "You are not authorized to access this page",
+    "serverError": "Server error. Please try again later",
+    "walletNotConnected": "Please connect your wallet first",
+    "invalidAmount": "Invalid amount entered",
+    "insufficientBalance": "Insufficient balance"
+  },
+  "footer": {
+    "copyright": "© 2025 CrowdFund - Decentralized Crowdfunding Platform",
+    "blockchain": "Built on Polygon Amoy Testnet"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "email": "Email",
+    "password": "Password",
+    "language": "Language"
+  }
+}

@@ -8,7 +8,7 @@ import './CreateCampaign.css';
 
 const FACTORY_ADDRESS = '0x94B09c15E4E8f96D23883E1b24fD872EA6e06EF0';
 const FACTORY_ABI = [
-  "function createCampaign(uint256 _goalAmount, uint256 _durationDays, string memory _title, string memory _description, string memory _imageURI) external returns (address)",
+  "function createCampaign(uint256 _goalAmount, uint256 _durationDays, string memory _title, string memory _description, string memory_imageURI) external returns (address)",
   "event CampaignCreated(address indexed campaign, address indexed founder, uint256 goalAmount, uint256 deadline, uint256 campaignId)"
 ];
 

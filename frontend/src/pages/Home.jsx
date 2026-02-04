@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { campaignAPI } from '../services/api';
 import { ethers } from 'ethers';
 import './Home.css';
@@ -9,6 +10,7 @@ const FACTORY_ADDRESS = '0x94B09c15E4E8f96D23883E1b24fD872EA6e06EF0';
 
 export default function Home() {
   const { isConnected, connect } = useAuth();
+  const { t } = useTranslation();
   const [campaigns, setCampaigns] = useState([]);
   const [stats, setStats] = useState({ total: 0, funded: 0, totalRaised: '0' });
   const [loading, setLoading] = useState(true);
@@ -76,23 +78,22 @@ export default function Home() {
       <section className="hero">
         <div className="hero-content">
           <h1 className="hero-title">
-            Fund the <span className="gradient-text">Future</span>
+            {t('hero.title')} <span className="gradient-text">{t('hero.titleHighlight')}</span>
           </h1>
           <p className="hero-subtitle">
-            A decentralized crowdfunding platform built on blockchain technology.
-            Support innovative projects with complete transparency.
+            {t('hero.subtitle')}
           </p>
           <div className="hero-buttons">
             <Link to="/campaigns" className="btn btn-primary btn-lg">
-              Explore Campaigns
+              {t('hero.exploreCampaigns')}
             </Link>
             {isConnected ? (
               <Link to="/create" className="btn btn-secondary btn-lg">
-                Create Campaign
+                {t('hero.createCampaign')}
               </Link>
             ) : (
               <button className="btn btn-secondary btn-lg" onClick={connect}>
-                Connect to Start
+                {t('hero.connectToStart')}
               </button>
             )}
           </div>
@@ -101,15 +102,15 @@ export default function Home() {
         <div className="hero-stats">
           <div className="stat-card">
             <div className="stat-value">{stats.total}</div>
-            <div className="stat-label">Total Campaigns</div>
+            <div className="stat-label">{t('stats.activeCampaigns')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{stats.funded}</div>
-            <div className="stat-label">Funded</div>
+            <div className="stat-label">{t('stats.successfulCampaigns')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{parseFloat(stats.totalRaised).toFixed(2)}</div>
-            <div className="stat-label">POL Raised</div>
+            <div className="stat-label">{t('stats.totalRaised')}</div>
           </div>
         </div>
       </section>
@@ -117,27 +118,22 @@ export default function Home() {
       {/* Features Section */}
       <section className="features">
         <div className="container">
-          <h2 className="section-title">Why Choose Us?</h2>
+          <h2 className="section-title">{t('features.title')}</h2>
           <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon">🔒</div>
-              <h3>Secure & Transparent</h3>
-              <p>All funds held in smart contracts with full transparency on-chain</p>
+              <h3>{t('features.secure.title')}</h3>
+              <p>{t('features.secure.description')}</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">⚡</div>
-              <h3>Gas Optimized</h3>
-              <p>71.2% gas savings using EIP-1167 minimal proxy pattern</p>
+              <h3>{t('features.decentralized.title')}</h3>
+              <p>{t('features.decentralized.description')}</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">🛡️</div>
-              <h3>Moderated</h3>
-              <p>On-chain moderation ensures only quality campaigns go live</p>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">💜</div>
-              <h3>Polygon Network</h3>
-              <p>Low fees and fast transactions on Polygon blockchain</p>
+              <h3>{t('features.transparent.title')}</h3>
+              <p>{t('features.transparent.description')}</p>
             </div>
           </div>
         </div>
@@ -147,23 +143,23 @@ export default function Home() {
       <section className="featured-campaigns">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Featured Campaigns</h2>
+            <h2 className="section-title">{t('campaigns.title')}</h2>
             <Link to="/campaigns" className="view-all-link">
-              View All →
+              {t('campaigns.viewAll')} →
             </Link>
           </div>
           
           {loading ? (
             <div className="loading-state">
               <div className="spinner"></div>
-              <p>Loading campaigns...</p>
+              <p>{t('common.loading')}</p>
             </div>
           ) : campaigns.length === 0 ? (
             <div className="empty-state">
-              <p>No campaigns yet. Be the first to create one!</p>
+              <p>{t('campaigns.noData')}</p>
               {isConnected && (
                 <Link to="/create" className="btn btn-primary">
-                  Create Campaign
+                  {t('hero.createCampaign')}
                 </Link>
               )}
             </div>
@@ -201,16 +197,16 @@ export default function Home() {
                         />
                       </div>
                       <div className="progress-stats">
-                        <span>{formatAmount(campaign.total_raised)} POL raised</span>
+                        <span>{formatAmount(campaign.total_raised)} POL {t('campaigns.raised')}</span>
                         <span>{calculateProgress(campaign.total_raised, campaign.goal_amount)}%</span>
                       </div>
                     </div>
                     <div className="campaign-meta">
                       <span className="campaign-creator">
-                        By {formatAddress(campaign.founder_address)}
+                        {t('campaigns.by')} {formatAddress(campaign.founder_address)}
                       </span>
                       <span className="campaign-contributors">
-                        {campaign.contributor_count || 0} backers
+                        {campaign.contributor_count || 0} {t('campaignDetail.backersCount')}
                       </span>
                     </div>
                   </div>

@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import './Navbar.css';
 
 export default function Navbar() {
   const { user, isConnected, isAdmin, connect, disconnect, loading } = useAuth();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
 
   const formatAddress = (addr) => {
@@ -12,6 +14,11 @@ export default function Navbar() {
   };
 
   const isActive = (path) => location.pathname === path;
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem('language', lng);
+  };
 
   return (
     <nav className="navbar">
@@ -26,20 +33,20 @@ export default function Navbar() {
             to="/" 
             className={`nav-link ${isActive('/') ? 'active' : ''}`}
           >
-            Home
+            {t('nav.home')}
           </Link>
           <Link 
             to="/campaigns" 
             className={`nav-link ${isActive('/campaigns') ? 'active' : ''}`}
           >
-            Campaigns
+            {t('nav.campaigns')}
           </Link>
           {isConnected && (
             <Link 
               to="/create" 
               className={`nav-link ${isActive('/create') ? 'active' : ''}`}
             >
-              Create Campaign
+              {t('nav.createCampaign')}
             </Link>
           )}
           {isConnected && (
@@ -47,7 +54,7 @@ export default function Navbar() {
               to="/dashboard" 
               className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
             >
-              My Dashboard
+              {t('nav.myDashboard')}
             </Link>
           )}
           {isAdmin && (
@@ -55,20 +62,37 @@ export default function Navbar() {
               to="/admin" 
               className={`nav-link admin-link ${isActive('/admin') ? 'active' : ''}`}
             >
-              🛡️ Admin
+              🛡️ {t('nav.admin')}
             </Link>
           )}
         </div>
 
         <div className="navbar-actions">
+          <div className="language-switcher">
+            <button 
+              className={`lang-btn ${i18n.language === 'en' ? 'active' : ''}`}
+              onClick={() => changeLanguage('en')}
+              title="English"
+            >
+              EN
+            </button>
+            <button 
+              className={`lang-btn ${i18n.language === 'ru' ? 'active' : ''}`}
+              onClick={() => changeLanguage('ru')}
+              title="Русский"
+            >
+              РУ
+            </button>
+          </div>
+
           {isConnected ? (
             <div className="user-menu">
               <div className="user-info">
-                {isAdmin && <span className="admin-badge">Admin</span>}
+                {isAdmin && <span className="admin-badge">{t('nav.adminBadge')}</span>}
                 <span className="user-address">{formatAddress(user?.address)}</span>
               </div>
               <button className="btn btn-outline" onClick={disconnect}>
-                Disconnect
+                {t('nav.disconnect')}
               </button>
             </div>
           ) : (
@@ -77,7 +101,7 @@ export default function Navbar() {
               onClick={connect}
               disabled={loading}
             >
-              {loading ? 'Connecting...' : 'Connect Wallet'}
+              {loading ? t('nav.connecting') : t('nav.connectWallet')}
             </button>
           )}
         </div>
