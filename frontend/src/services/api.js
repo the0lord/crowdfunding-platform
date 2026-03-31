@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
 
 const getAuthHeader = () => {
   const token = localStorage.getItem('token');
@@ -163,7 +163,7 @@ export const uploadAPI = {
     const formData = new FormData();
     formData.append('image', file);
     
-    const response = await fetch(`${API_URL}/uploads/image`, {
+    const response = await fetch(`${API_URL}/uploads/campaign-image`, {
       method: 'POST',
       headers: getAuthHeader(),
       body: formData
@@ -182,6 +182,173 @@ export const api = {
   getContributions: contributionAPI.getByUser,
   createContribution: contributionAPI.create,
   admin: adminAPI
+};
+
+// ─────────────────────── KGST Platform APIs ───────────────────────────────
+
+// Bridge API (KGS <-> KGST)
+export const bridgeAPI = {
+  getMode: async () => {
+    const response = await fetch(`${API_URL}/bridge/mode`);
+    return handleResponse(response);
+  },
+
+  getRates: async () => {
+    const response = await fetch(`${API_URL}/bridge/rates`);
+    return handleResponse(response);
+  },
+
+  requestDeposit: async (data) => {
+    const response = await fetch(`${API_URL}/bridge/deposit/request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  getDepositStatus: async (txId) => {
+    const response = await fetch(`${API_URL}/bridge/deposit/${txId}/status`);
+    return handleResponse(response);
+  },
+
+  requestWithdraw: async (data) => {
+    const response = await fetch(`${API_URL}/bridge/withdraw/request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  getWithdrawStatus: async (txId) => {
+    const response = await fetch(`${API_URL}/bridge/withdraw/${txId}/status`);
+    return handleResponse(response);
+  },
+
+  getTransactions: async (wallet, page = 1) => {
+    const response = await fetch(`${API_URL}/bridge/transactions?wallet=${wallet}&page=${page}`);
+    return handleResponse(response);
+  },
+
+  // Demo-only endpoints
+  demoConfirmDeposit: async (txId) => {
+    const response = await fetch(`${API_URL}/bridge/demo/confirm-deposit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tx_id: txId }),
+    });
+    return handleResponse(response);
+  },
+
+  demoConfirmWithdraw: async (txId) => {
+    const response = await fetch(`${API_URL}/bridge/demo/confirm-withdraw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tx_id: txId }),
+    });
+    return handleResponse(response);
+  },
+
+  demoGetBalance: async (wallet) => {
+    const response = await fetch(`${API_URL}/bridge/demo/balance?wallet=${wallet}`);
+    return handleResponse(response);
+  },
+
+  getStats: async () => {
+    const response = await fetch(`${API_URL}/bridge/stats`, {
+      headers: getAuthHeader(),
+    });
+    return handleResponse(response);
+  },
+};
+
+// KYC API
+export const kycAPI = {
+  getMode: async () => {
+    const response = await fetch(`${API_URL}/kyc/mode`);
+    return handleResponse(response);
+  },
+
+  startVerification: async (data) => {
+    const response = await fetch(`${API_URL}/kyc/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  getStatus: async (wallet) => {
+    const response = await fetch(`${API_URL}/kyc/status?wallet=${wallet}`);
+    return handleResponse(response);
+  },
+};
+
+// Wallet API
+export const walletAPI = {
+  register: async (data) => {
+    const response = await fetch(`${API_URL}/wallets/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  getInfo: async (address) => {
+    const response = await fetch(`${API_URL}/wallets/${address}`);
+    return handleResponse(response);
+  },
+
+  upgradeTier: async (data) => {
+    const response = await fetch(`${API_URL}/wallets/tier/upgrade`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+};
+
+// Governance API (DAO)
+export const governanceAPI = {
+  getProposals: async (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.status) queryParams.append('status', params.status);
+    if (params.type) queryParams.append('type', params.type);
+    if (params.page) queryParams.append('page', params.page);
+    const response = await fetch(`${API_URL}/governance/proposals?${queryParams}`);
+    return handleResponse(response);
+  },
+
+  getProposal: async (id) => {
+    const response = await fetch(`${API_URL}/governance/proposals/${id}`);
+    return handleResponse(response);
+  },
+
+  createProposal: async (data) => {
+    const response = await fetch(`${API_URL}/governance/proposals`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  voteOnProposal: async (id, data) => {
+    const response = await fetch(`${API_URL}/governance/proposals/${id}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  getStats: async () => {
+    const response = await fetch(`${API_URL}/governance/stats`);
+    return handleResponse(response);
+  },
 };
 
 export default api;

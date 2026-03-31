@@ -40,8 +40,8 @@ contract Campaign is Ownable, ReentrancyGuard, Pausable {
     uint256 public contributorCount; // Number of unique contributors
     CampaignState public state;
     
-    // Platform fee (2% = 200 basis points)
-    uint256 public constant PLATFORM_FEE_BPS = 200;
+    // Platform fee (1.5% = 150 basis points)
+    uint256 public constant PLATFORM_FEE_BPS = 150;
     uint256 public constant BPS_DENOMINATOR = 10000;
     address public platformWallet;
     
@@ -238,7 +238,7 @@ contract Campaign is Ownable, ReentrancyGuard, Pausable {
         uint256 amount = address(this).balance;
         require(amount > 0, "No funds to withdraw");
         
-        // Calculate platform fee (2%)
+        // Calculate platform fee (1.5%)
         uint256 platformFee = (amount * PLATFORM_FEE_BPS) / BPS_DENOMINATOR;
         uint256 founderAmount = amount - platformFee;
         

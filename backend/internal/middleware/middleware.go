@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -23,11 +25,65 @@ func CORS() gin.HandlerFunc {
 	}
 }
 
-// RateLimiter creates a simple rate limiting middleware
+// rateBucket tracks per-IP request counts
+type rateBucket struct {
+	tokens    float64
+	lastCheck time.Time
+}
+
+// RateLimiter creates a token-bucket rate limiter (in-memory, per IP)
+// Allows `rate` requests per second with a burst of `burst`
 func RateLimiter() gin.HandlerFunc {
-	// Simple in-memory rate limiter (for production, use Redis)
+	const rate = 10.0  // 10 requests/sec sustained
+	const burst = 30.0 // allow bursts up to 30
+
+	var mu sync.Mutex
+	visitors := make(map[string]*rateBucket)
+
+	// Cleanup stale entries every 5 minutes
+	go func() {
+		for {
+			time.Sleep(5 * time.Minute)
+			mu.Lock()
+			for ip, b := range visitors {
+				if time.Since(b.lastCheck) > 10*time.Minute {
+					delete(visitors, ip)
+				}
+			}
+			mu.Unlock()
+		}
+	}()
+
 	return func(c *gin.Context) {
-		// TODO: Implement proper rate limiting with Redis
+		ip := c.ClientIP()
+
+		mu.Lock()
+		b, exists := visitors[ip]
+		if !exists {
+			b = &rateBucket{tokens: burst, lastCheck: time.Now()}
+			visitors[ip] = b
+		}
+
+		// Refill tokens based on elapsed time
+		elapsed := time.Since(b.lastCheck).Seconds()
+		b.tokens += elapsed * rate
+		if b.tokens > burst {
+			b.tokens = burst
+		}
+		b.lastCheck = time.Now()
+
+		if b.tokens < 1 {
+			mu.Unlock()
+			c.Header("Retry-After", "1")
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
+				"error": "Rate limit exceeded. Please try again shortly.",
+			})
+			return
+		}
+
+		b.tokens--
+		mu.Unlock()
+
 		c.Next()
 	}
 }

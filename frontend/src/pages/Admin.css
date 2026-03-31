@@ -290,81 +290,40 @@
 }
 
 /* Buttons */
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  border: none;
-  font-size: 0.875rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  box-shadow: var(--shadow-md);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.btn-secondary {
-  background: var(--surface-hover);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-}
-
-.btn-approve {
+.admin-page .btn-approve {
   background: var(--success);
   color: white;
   box-shadow: var(--shadow-md);
 }
 
-.btn-approve:hover {
+.admin-page .btn-approve:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   filter: brightness(1.1);
 }
 
-.btn-reject {
+.admin-page .btn-reject {
   background: var(--error);
   color: white;
   box-shadow: var(--shadow-md);
 }
 
-.btn-reject:hover {
+.admin-page .btn-reject:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   filter: brightness(1.1);
 }
 
-.btn-danger {
+.admin-page .btn-danger {
   background: rgba(239, 68, 68, 0.15);
   color: var(--error);
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
-.btn-danger:hover {
+.admin-page .btn-danger:hover {
   background: var(--error);
   color: white;
   border-color: transparent;
-}
-
-.btn-sm {
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-  border-radius: var(--radius-sm);
 }
 
 /* Blacklist Section */

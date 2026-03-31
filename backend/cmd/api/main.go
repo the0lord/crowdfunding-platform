@@ -34,8 +34,12 @@ func main() {
 	// Initialize blockchain client (optional - only if PRIVATE_KEY is set)
 	var bcClient *blockchain.Client
 	if cfg.PrivateKey != "" {
-		chainID := int64(80002) // Polygon Amoy
-		bcClient, err = blockchain.NewClient(cfg.RPCUrl, cfg.FactoryAddress, strings.TrimPrefix(cfg.PrivateKey, "0x"), chainID)
+		// Use BSC chain for campaign operations
+		var chainID int64 = 97 // BSC Testnet
+		if cfg.BSCChainID == "56" {
+			chainID = 56 // BSC Mainnet
+		}
+		bcClient, err = blockchain.NewClient(cfg.BSCRPCUrl, cfg.BSCFactoryAddr, strings.TrimPrefix(cfg.PrivateKey, "0x"), chainID)
 		if err != nil {
 			log.Printf("Warning: Failed to initialize blockchain client: %v", err)
 		} else {
@@ -61,6 +65,21 @@ func main() {
 	authHandler := handlers.NewAuthHandler(db, jwtService, adminAddresses)
 	imageHandler := handlers.NewImageHandler(imageService)
 	adminHandler := handlers.NewAdminHandler(db)
+
+	// Initialize KGST platform services
+	demoMode := os.Getenv("DEMO_MODE") != "false" // Demo mode ON by default, set DEMO_MODE=false for production
+	if demoMode {
+		log.Println("🎮 KGST Platform running in DEMO MODE (bridge & KYC simulated)")
+	}
+	bridgeService := services.NewBridgeService(db, demoMode)
+	kycService := services.NewKYCService(db, os.Getenv("SUMSUB_APP_TOKEN"), os.Getenv("SUMSUB_SECRET_KEY"), demoMode)
+	walletService := services.NewWalletService(db)
+
+	// Initialize KGST platform handlers
+	bridgeHandler := handlers.NewBridgeHandler(bridgeService)
+	kycHandler := handlers.NewKYCHandler(kycService)
+	walletHandler := handlers.NewWalletHandler(walletService)
+	governanceHandler := handlers.NewGovernanceHandler(db)
 
 	// Initialize router
 	// Set Gin mode based on environment
@@ -139,6 +158,53 @@ func main() {
 			admin.POST("/blacklist", adminHandler.BlacklistAddress())
 			admin.DELETE("/blacklist/:id", adminHandler.RemoveFromBlacklist())
 			admin.GET("/users", adminHandler.GetAllUsers())
+		}
+
+		// ──────────────── KGST Platform Routes ──────────────────
+
+		// Bridge routes (KGS <-> KGST)
+		bridge := v1.Group("/bridge")
+		{
+			bridge.GET("/rates", bridgeHandler.GetRates())
+			bridge.GET("/mode", bridgeHandler.GetBridgeMode())
+			bridge.GET("/transactions", bridgeHandler.GetUserTransactions())
+			bridge.POST("/deposit/request", auth.AuthMiddleware(jwtService), bridgeHandler.RequestDeposit())
+			bridge.GET("/deposit/:id/status", bridgeHandler.GetDepositStatus())
+			bridge.POST("/deposit/webhook", bridgeHandler.DepositWebhook()) // Payment provider webhook
+			bridge.POST("/withdraw/request", auth.AuthMiddleware(jwtService), bridgeHandler.RequestWithdraw())
+			bridge.GET("/withdraw/:id/status", bridgeHandler.GetWithdrawStatus())
+			bridge.GET("/stats", auth.AuthMiddleware(jwtService), auth.AdminMiddleware(), bridgeHandler.GetBridgeStats())
+			// Demo-only routes (disabled when DEMO_MODE=false)
+			bridge.POST("/demo/confirm-deposit", bridgeHandler.DemoConfirmDeposit())
+			bridge.POST("/demo/confirm-withdraw", bridgeHandler.DemoConfirmWithdraw())
+			bridge.GET("/demo/balance", bridgeHandler.DemoGetBalance())
+		}
+
+		// Wallet routes
+		wallets := v1.Group("/wallets")
+		{
+			wallets.POST("/register", walletHandler.RegisterWallet())
+			wallets.GET("/:address", walletHandler.GetWalletInfo())
+			wallets.PUT("/tier/upgrade", auth.AuthMiddleware(jwtService), walletHandler.UpgradeTier())
+		}
+
+		// KYC routes
+		kyc := v1.Group("/kyc")
+		{
+			kyc.GET("/mode", kycHandler.GetKYCMode())
+			kyc.POST("/start", kycHandler.StartVerification()) // No auth required in demo mode
+			kyc.GET("/status", kycHandler.GetKYCStatus())
+			kyc.POST("/webhook", kycHandler.KYCWebhook()) // Sumsub webhook (production)
+		}
+
+		// Governance routes (DAO)
+		governance := v1.Group("/governance")
+		{
+			governance.GET("/proposals", governanceHandler.GetProposals())
+			governance.POST("/proposals", auth.AuthMiddleware(jwtService), governanceHandler.CreateProposal())
+			governance.GET("/proposals/:id", governanceHandler.GetProposal())
+			governance.POST("/proposals/:id/vote", auth.AuthMiddleware(jwtService), governanceHandler.VoteOnProposal())
+			governance.GET("/stats", governanceHandler.GetGovernanceStats())
 		}
 	}
 

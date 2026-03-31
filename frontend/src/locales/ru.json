@@ -1,88 +1,282 @@
 {
   "nav": {
+    "brand": "KGST CrowdFund",
     "home": "Главная",
     "campaigns": "Кампании",
-    "createCampaign": "Создать кампанию",
-    "myDashboard": "Мой Кабинет",
-    "admin": "Администратор",
+    "createCampaign": "Создать",
+    "bridge": "Бридж",
+    "wallet": "Кошелек",
+    "dao": "DAO",
+    "myDashboard": "Кабинет",
+    "admin": "Админ",
     "connectWallet": "Подключить кошелек",
     "connecting": "Подключение...",
     "disconnect": "Отключить",
-    "adminBadge": "Администратор"
+    "adminBadge": "Администратор",
+    "signIn": "Войти",
+    "connectMetaMask": "Подключить MetaMask",
+    "languageEnglish": "Английский",
+    "languageRussian": "Русский",
+    "tools": "Сервисы",
+    "menu": "Меню",
+    "closeMenu": "Закрыть меню"
   },
   "hero": {
-    "title": "Финансируй Будущее",
+    "title": "Финансируй",
     "titleHighlight": "Будущее",
-    "subtitle": "Децентрализованная платформа краудфандинга, построенная на технологии блокчейна. Поддерживайте инновационные проекты с полной прозрачностью.",
-    "exploreCampaigns": "Обзор кампаний",
-    "createCampaign": "Создать кампанию",
-    "connectToStart": "Подключитесь для начала"
+    "subtitle": "Децентрализованная платформа краудфандинга на базе блокчейна. Поддерживайте инновационные проекты с полной прозрачностью.",
+    "exploreCampaigns": "Кампании",
+    "createCampaign": "Создать",
+    "connectToStart": "Подключить"
   },
   "stats": {
-    "activeCampaigns": "Активные кампании",
-    "successfulCampaigns": "Успешные кампании",
-    "totalRaised": "Всего собрано"
+    "activeCampaigns": "Активные",
+    "successfulCampaigns": "Успешные",
+    "totalRaised": "Собрано"
   },
   "campaigns": {
     "title": "Избранные кампании",
     "viewAll": "Посмотреть все кампании",
     "by": "автор",
-    "progress": "Прогресс",
-    "timeLeft": "Осталось времени",
-    "goal": "Цель",
-    "raised": "Собрано",
-    "days": "дней",
+    "raised": "собрано",
     "noData": "Нет данных о кампании"
   },
   "features": {
-    "title": "Почему выбирают CrowdFund?",
+    "title": "Почему KGST",
     "decentralized": {
       "title": "Полностью децентрализовано",
-      "description": "Построено на блокчейне с использованием смарт-контрактов для прозрачности"
+      "description": "Смарт-контракты, прозрачная казначейская логика и проверяемые изменения состояния видны целиком."
     },
     "secure": {
       "title": "Высокая безопасность",
-      "description": "Ваши средства защищены криптографической безопасностью"
+      "description": "Операции с эскроу и действия кошелька проходят через явные ончейн-разрешения."
     },
     "transparent": {
-      "title": "100% Прозрачность",
-      "description": "Все транзакции записываются в блокчейне"
+      "title": "100% прозрачность",
+      "description": "Состояние кампаний, итоги governance и заявки бриджа можно проверять без скрытой логики."
     }
   },
-  "buttons": {
-    "exploreCampaigns": "Обзор кампаний",
-    "viewDetails": "Подробнее",
-    "contribute": "Поддержать",
-    "backup": "Сохранить семя фразу",
-    "loadMore": "Загрузить еще",
-    "loading": "Загрузка...",
-    "error": "Ошибка"
+  "categories": {
+    "all": "Все категории",
+    "technology": "Технологии",
+    "creative": "Креатив",
+    "community": "Сообщество",
+    "education": "Образование",
+    "environment": "Экология",
+    "health": "Здравоохранение",
+    "other": "Другое"
+  },
+  "campaignStates": {
+    "active": "Активна",
+    "successful": "Успешна",
+    "failed": "Неуспешна",
+    "cancelled": "Отменена"
+  },
+  "moderationStatuses": {
+    "pending": "На рассмотрении",
+    "approved": "Одобрена",
+    "rejected": "Отклонена"
+  },
+  "homePage": {
+    "eyebrow": "Контур KGST",
+    "heroTail": "для основателей, бэкеров и прозрачных казначейских решений.",
+    "heroSupport": "Платформа краудфандинга для надежных запусков, прозрачного эскроу и решений через DAO.",
+    "platformPulse": "Пульс платформы",
+    "platformPulseTitle": "Живые метрики",
+    "platformPulseBody": "Быстрый срез потока кампаний, видимого объема и качества запусков.",
+    "successRate": "Доля успеха",
+    "averageRaise": "средний сбор",
+    "metricNoteCampaigns": "Одобренные запуски в текущем обзоре",
+    "metricNoteSuccess": "Кампании, уже достигшие цели",
+    "metricNoteRaised": "Видимый объем KGST в этом срезе",
+    "campaignRail": "Кампании",
+    "campaignRailSummary": "BSC обрабатывает исполнение кампаний, поток взносов и расчеты в KGST.",
+    "governanceRail": "Управление",
+    "governanceRailSummary": "Polygon Amoy обрабатывает делегирование, голосование и сигналы для казначейства.",
+    "factoryLabel": "Фабрика",
+    "tokenLabel": "Токен KGST",
+    "governanceLabel": "Crowdfund DAO",
+    "registryLabel": "Реестр",
+    "campaignChainLabel": "Сеть кампаний",
+    "governanceChainLabel": "Сеть DAO",
+    "deployed": "Развернуто",
+    "notDeployed": "Не развернуто",
+    "live": "Активно",
+    "pending": "Ожидается",
+    "governanceReady": "Управление активно",
+    "governancePending": "Управление ожидается",
+    "featureKickerSecure": "Эскроу",
+    "featureBodySecure": "Основатель получает доступ к средствам только после цели и дедлайна в смарт-контракте.",
+    "featureKickerDecentralized": "Скорость",
+    "featureBodyDecentralized": "Компактная bento-сетка держит статус, объем и готовность читаемыми с первого взгляда.",
+    "featureKickerTransparent": "DAO",
+    "featureBodyTransparent": "Пороги, окна голосования и контракты читаются прямо внутри продукта.",
+    "sectionValueTitle": "Создано для доверия",
+    "sectionValueBody": "Каждый блок выстроен вокруг ясности кампаний, прозрачности эскроу и понятного DAO-управления.",
+    "chipEscrow": "Эскроу кампании",
+    "chipGovernance": "Голосование DAO",
+    "chipI18n": "BSC + Polygon",
+    "sectionFeaturedTitle": "Избранные кампании",
+    "sectionFeaturedBody": "Изучайте проверенные запуски с видимой динамикой и чистым прогрессом сбора.",
+    "goalLabel": "Цель",
+    "backersLabel": "Бэкеры",
+    "daysLeft": "Осталось {{count}} дн.",
+    "endsSoon": "Завершается через 1 день",
+    "ended": "Завершена",
+    "noDeadline": "Без дедлайна",
+    "sectionProtocolTitle": "Протокол",
+    "protocolHeadline": "Две сети, один ясный слой",
+    "sectionProtocolBody": "Ключевые контуры, адреса контрактов и статус сетей собраны в одном месте.",
+    "protocolSurfaceTitle": "Контракты и рельсы",
+    "openInExplorer": "Открыть"
   },
   "campaignList": {
-    "title": "Все кампании",
-    "search": "Поиск кампаний...",
-    "filter": "Фильтр",
-    "sortBy": "Сортировать по",
-    "active": "Активные",
-    "successful": "Успешные",
-    "failed": "Неудачные",
-    "all": "Все",
-    "noResults": "Кампании не найдены"
+    "kicker": "Каталог",
+    "title": "Кампании",
+    "description": "Изучайте проверенные запуски и открывайте кампании с полным ончейн-контекстом.",
+    "visibleLabel": "Видно",
+    "pageLabel": "Страница",
+    "totalPagesLabel": "Страниц",
+    "searchPlaceholder": "Поиск кампаний",
+    "allStates": "Все",
+    "funded": "Собрана",
+    "loading": "Загрузка кампаний...",
+    "noResultsTitle": "Ничего не найдено",
+    "noResultsBody": "Попробуйте другой запрос или ослабьте фильтры.",
+    "backersCount": "{{count}} бэкеров",
+    "raisedSummary": "Собрано {{amount}} KGST",
+    "raisedLabel": "Собрано"
   },
-  "campaignDetail": {
-    "creator": "Создатель",
-    "category": "Категория",
-    "description": "Описание",
-    "goal": "Цель финансирования",
-    "deadline": "Крайний срок",
-    "raised": "Собрано средств",
-    "backersCount": "Количество спонсоров",
-    "contribute": "Поддержать сейчас",
-    "updates": "Обновления",
-    "comments": "Комментарии",
-    "noUpdates": "Обновлений нет",
-    "enterAmount": "Введите сумму в MATIC",
-    "confirm": "Подтвердить поддержку"
+  "dashboard": {
+    "title": "Кабинет",
+    "heroKicker": "Профиль",
+    "heroBody": "Следите за запусками, взносами и модерацией в одном компактном виде.",
+    "connectTitle": "Подключите кошелек",
+    "connectBody": "После подключения здесь появятся созданные вами кампании и ваши взносы.",
+    "metrics": {
+      "launchedLabel": "Запуски",
+      "launchedNote": "Созданы этим кошельком",
+      "raisedLabel": "Собрано",
+      "raisedNote": "Видимый объем по вашим запускам",
+      "backedLabel": "Поддержано",
+      "backedNote": "{{count}} взносов"
+    },
+    "tabs": {
+      "campaigns": "{{count}} кампаний",
+      "contributions": "{{count}} взносов"
+    },
+    "emptyCampaignsTitle": "Запусков пока нет",
+    "emptyCampaignsBody": "Создайте первую кампанию, чтобы начать собирать поддержку.",
+    "campaignKicker": "Кампания",
+    "fields": {
+      "progress": "Прогресс",
+      "raised": "Собрано",
+      "goal": "Цель",
+      "created": "Создано",
+      "backers": "Бэкеры"
+    },
+    "createdOn": "Создана {{date}}",
+    "backersCount": "{{count}} бэкеров",
+    "emptyContributionsTitle": "Взносов пока нет",
+    "emptyContributionsBody": "Поддержите кампанию, и она появится в этой истории.",
+    "contributionKicker": "Взнос",
+    "campaignFallback": "Кампания №{{id}}",
+    "viewCampaign": "Открыть"
+  },
+  "bridge": {
+    "title": "Бридж",
+    "connectBody": "Подключите кошелек, чтобы переводить средства между KGS и KGST.",
+    "demoBadge": "Демо",
+    "demoBody": "Заявки можно пройти целиком без реальных банковских рельсов.",
+    "subtitle": "Переводите средства между KGS и KGST по одному сценарию.",
+    "balanceLabel": "Баланс",
+    "balanceEquivalent": "Примерно {{amount}} KGS",
+    "demoConfirming": "Подтверждение...",
+    "tabs": {
+      "deposit": "Пополнение",
+      "withdraw": "Вывод"
+    },
+    "deposit": {
+      "amountLabel": "Сумма пополнения",
+      "amountPlaceholder": "Введите сумму",
+      "feeSummary": "Комиссия: {{amount}} KGS ({{percent}}%)",
+      "receiveSummary": "Вы получите: {{amount}} KGST",
+      "paymentMethodLabel": "Способ оплаты",
+      "requestButton": "Заявка на ввод",
+      "resultTitle": "Ввод создан",
+      "scanQr": "Отсканируйте QR или используйте реквизиты ниже",
+      "qrCodeLabel": "QR-платеж",
+      "demoHint": "В демо-режиме входящий перевод можно подтвердить сразу.",
+      "demoConfirmButton": "Подтвердить пополнение",
+      "newRequestButton": "Новый ввод"
+    },
+    "withdraw": {
+      "amountLabel": "Сумма вывода",
+      "amountPlaceholder": "Введите сумму KGST",
+      "feeSummary": "Комиссия: {{amount}} KGST ({{percent}}%)",
+      "receiveSummary": "Вы получите: {{amount}} KGS",
+      "bankNameLabel": "Банк",
+      "bankAccountLabel": "Банковский счет",
+      "bankAccountPlaceholder": "Введите номер счета",
+      "requestButton": "Заявка на вывод",
+      "resultTitle": "Вывод создан",
+      "demoHint": "В демо-режиме выплату можно подтвердить сразу.",
+      "demoConfirmButton": "Подтвердить вывод",
+      "newRequestButton": "Новый вывод"
+    },
+    "fields": {
+      "transactionId": "ID транзакции",
+      "fee": "Комиссия",
+      "youReceive": "К получению",
+      "bank": "Банк",
+      "account": "Счет",
+      "reference": "Назначение",
+      "tokenAmount": "Сумма токенов",
+      "eta": "Срок"
+    },
+    "history": {
+      "title": "Активность"
+    },
+    "directions": {
+      "deposit": "Пополнение",
+      "withdraw": "Вывод",
+      "withdrawal": "Вывод"
+    },
+    "statuses": {
+      "pending": "В ожидании",
+      "completed": "Завершено",
+      "expired": "Истекло",
+      "cancelled": "Отменено",
+      "failed": "Ошибка"
+    },
+    "paymentMethods": {
+      "bank_transfer": {
+        "name": "Банковский перевод",
+        "description": "Отправьте фиат с локального банковского счета."
+      },
+      "mbank_qr": {
+        "name": "MBank QR",
+        "description": "Оплата по QR в мобильном приложении."
+      },
+      "elsom": {
+        "name": "Elsom",
+        "description": "Оплата через кошелек Elsom."
+      },
+      "odengi": {
+        "name": "O!Money",
+        "description": "Оплата через кошелек O!Money."
+      }
+    },
+    "toasts": {
+      "depositCreated": "Заявка на пополнение создана",
+      "depositFailed": "Не удалось создать заявку на пополнение",
+      "depositConfirmed": "Пополнение подтверждено",
+      "depositConfirmFailed": "Не удалось подтвердить пополнение",
+      "withdrawCreated": "Заявка на вывод создана",
+      "withdrawFailed": "Не удалось создать заявку на вывод",
+      "withdrawConfirmed": "Вывод подтвержден",
+      "withdrawConfirmFailed": "Не удалось подтвердить вывод"
+    }
   },
   "createCampaign": {
     "title": "Создайте вашу кампанию",
@@ -90,45 +284,439 @@
     "campaignTitle": "Название кампании",
     "description": "Описание",
     "category": "Категория",
-    "fundingGoal": "Цель финансирования (MATIC)",
+    "fundingGoal": "Цель финансирования (KGST)",
     "deadline": "Крайний срок",
     "imageUrl": "URL изображения кампании",
     "create": "Создать кампанию",
     "success": "Кампания успешно создана",
-    "error": "Ошибка при создании кампании"
+    "error": "Ошибка при создании кампании",
+    "connectTitle": "Подключите кошелек",
+    "connectBody": "Перед развертыванием нового контракта кампании требуется подключение кошелька.",
+    "steps": {
+      "details": "Детали",
+      "funding": "Финансирование",
+      "review": "Проверка"
+    },
+    "detailsTitle": "Детали кампании",
+    "detailsBody": "Начните с ясного названия, хорошего описания и правильной категории.",
+    "fields": {
+      "title": "Название",
+      "imageUrl": "URL изображения",
+      "goalAmount": "Цель сбора",
+      "durationDays": "Длительность",
+      "endDate": "Дата завершения"
+    },
+    "placeholders": {
+      "title": "Четкое название кампании с понятным результатом",
+      "description": "Опишите проблему, план, этапы выполнения и использование средств.",
+      "imageUrl": "Вставьте URL главного изображения",
+      "goalAmount": "Введите целевую сумму в KGST"
+    },
+    "titleCount": "{{count}} / 200",
+    "descriptionCount": "{{count}} / 5000",
+    "imageHint": "Это поле можно оставить пустым, тогда будет использовано изображение-заглушка.",
+    "fundingTitle": "Параметры финансирования",
+    "fundingBody": "Задайте реалистичную цель и срок.",
+    "goalHint": "Выберите реалистичную цель, связанную с масштабом и этапами проекта.",
+    "durationValue": "{{count}} дней",
+    "endsOn": "Кампания завершится {{date}}",
+    "reviewTitle": "Проверка",
+    "reviewBody": "Этот набор данных будет развернут в сети и сохранен в backend.",
+    "sections": {
+      "campaignDetails": "Детали",
+      "fundingDetails": "Финансы",
+      "media": "Медиа"
+    },
+    "previewAlt": "Превью кампании",
+    "noticeTitle": "Развертывание в сети:",
+    "noticeBody": "после отправки контракт кампании будет создан в BSC, а метаданные кампании сохранятся в backend.",
+    "creating": "Создание...",
+    "toasts": {
+      "creatingOnChain": "Создание кампании в сети...",
+      "waitingConfirmation": "Ожидание подтверждения транзакции...",
+      "savingDetails": "Сохранение данных кампании...",
+      "createdSuccess": "Кампания успешно создана"
+    },
+    "errors": {
+      "titleRequired": "Название обязательно",
+      "titleLength": "Название должно содержать от 10 до 200 символов",
+      "descriptionRequired": "Описание обязательно",
+      "descriptionLength": "Описание должно содержать не менее 50 символов",
+      "categoryRequired": "Выберите категорию",
+      "goalPositive": "Цель должна быть больше нуля",
+      "goalLimit": "Цель не может превышать 1 000 000 KGST",
+      "goalTooHigh": "Цель превышает допустимый лимит",
+      "durationRange": "Длительность должна быть от 7 до 90 дней",
+      "imageRequired": "Требуется URL изображения",
+      "tooManyPending": "Слишком много кампаний еще ожидают модерации",
+      "blacklisted": "Этот кошелек находится в черном списке и не может создавать кампании",
+      "createFailed": "Не удалось создать кампанию"
+    }
   },
-  "dashboard": {
-    "title": "Мой кабинет",
-    "myCampaigns": "Мои кампании",
-    "contributions": "Мои поддержки",
-    "wallet": "Кошелек",
-    "balance": "Баланс",
-    "noCampaigns": "Вы еще не создали кампаний",
-    "noContributions": "Вы еще не поддерживали кампании"
+  "campaignDetail": {
+    "loading": "Загрузка кампании...",
+    "notFoundTitle": "Кампания не найдена",
+    "notFoundBody": "Кампания могла быть удалена или ссылка неверна.",
+    "viewAllCampaigns": "Все кампании",
+    "createdBy": "Автор",
+    "aboutTitle": "О кампании",
+    "noDescription": "Описание не указано.",
+    "updatesTitle": "Обновления",
+    "contributorsTitle": "Участники: {{count}}",
+    "moreContributors": "Еще {{count}} участников",
+    "noContributors": "Пока нет взносов.",
+    "goalSummary": "Цель {{amount}} KGST",
+    "fundedProgress": "Профинансировано на {{percent}}%",
+    "backersCount": "{{count}} бэкеров",
+    "contributeButton": "Поддержать сейчас",
+    "connectToContribute": "Подключитесь, чтобы поддержать",
+    "successfulMessage": "Кампания достигла своей цели.",
+    "founderWithdrawalTitle": "Вывод средств",
+    "founderWithdrawalBody": "Когда кампания выполнит ончейн-условия, основатель сможет вывести средства из эскроу здесь.",
+    "escrowBalance": "Баланс эскроу: {{amount}} KGST",
+    "withdrawingButton": "Вывод...",
+    "withdrawButton": "Вывести средства",
+    "viewWithdrawalTx": "Посмотреть транзакцию вывода",
+    "failedMessage": "Кампания не достигла своей цели.",
+    "shareTitle": "Поделиться",
+    "copyLink": "Скопировать ссылку",
+    "modalTitle": "Поддержать кампанию",
+    "modalSubtitle": "Внести вклад в «{{title}}»",
+    "amountLabel": "Сумма",
+    "amountPlaceholder": "Введите сумму в KGST",
+    "modalButton": "Поддержать на {{amount}} KGST",
+    "withdrawHints": {
+      "connectFounder": "Подключите кошелек основателя, чтобы проверить возможность вывода.",
+      "onlyFounder": "Только основатель может вывести средства из эскроу.",
+      "goalNotReached": "Цель финансирования еще не достигнута.",
+      "afterDeadline": "Средства разблокируются только после завершения срока кампании.",
+      "alreadyWithdrawn": "Средства из эскроу уже выведены.",
+      "stateBlocked": "Вывод заблокирован, пока кампания находится в статусе «{{state}}».",
+      "zeroBalance": "На балансе эскроу нет средств для вывода.",
+      "ready": "Эскроу готов к выводу основателем.",
+      "notAvailable": "Вывод пока недоступен.",
+      "balanceUnavailable": "Сейчас не удалось проверить баланс эскроу."
+    },
+    "toasts": {
+      "loadFailed": "Не удалось загрузить кампанию",
+      "invalidAmount": "Введите корректную сумму",
+      "approving": "Подтверждение KGST и подготовка взноса...",
+      "transactionPending": "Транзакция отправлена...",
+      "contributionSuccess": "Взнос успешно отправлен",
+      "contributionFailed": "Не удалось поддержать кампанию",
+      "withdrawSubmitting": "Отправка вывода основателя...",
+      "withdrawSuccess": "Вывод основателя завершен",
+      "withdrawFailed": "Не удалось вывести средства",
+      "linkCopied": "Ссылка на кампанию скопирована"
+    }
+  },
+  "wallet": {
+    "title": "Кошелек",
+    "connectBody": "Подключите кошелек, чтобы увидеть лимиты, уровень KYC и месячную емкость.",
+    "demoBadge": "Демо-режим",
+    "demoBody": "Отправка KYC имитируется для быстрого тестирования продукта.",
+    "walletTypes": {
+      "web3auth": "Web3Auth",
+      "metamask": "MetaMask"
+    },
+    "registerTitle": "Регистрация кошелька",
+    "registerBody": "Создайте профиль, чтобы открыть лимиты, KYC и бридж.",
+    "registering": "Регистрация...",
+    "registerButton": "Зарегистрировать кошелек",
+    "tierTitle": "Уровень",
+    "tierLabel": "Уровень {{count}}",
+    "currentBadge": "Текущий",
+    "monthlyLimit": "Месячный лимит",
+    "unlimited": "Без ограничений",
+    "monthlyVolume": "Использовано",
+    "remaining": "Остаток",
+    "gasSubsidy": "Газ",
+    "none": "Нет",
+    "kycTitle": "KYC",
+    "levelLabel": "Уровень {{count}}",
+    "verifiedBadge": "Подтвержден",
+    "verifyNow": "Пройти",
+    "completeLevelFirst": "Сначала уровень {{count}}",
+    "modalTitle": "KYC уровень {{count}}",
+    "modalDemoBody": "В демо-режиме этот шаг подтверждается автоматически без ручной проверки.",
+    "fields": {
+      "phoneNumber": "Номер телефона",
+      "fullName": "Полное имя",
+      "documentType": "Тип документа",
+      "documentId": "Номер документа",
+      "dateOfBirth": "Дата рождения",
+      "address": "Адрес",
+      "selfieConfirm": "Подтверждаю, что селфи или проверка живости уже выполнены"
+    },
+    "placeholders": {
+      "email": "name@example.com",
+      "phone": "555 123 456",
+      "fullName": "Полное имя по документам",
+      "documentId": "Введите номер документа",
+      "address": "Введите адрес проживания"
+    },
+    "documentTypes": {
+      "passport": "Паспорт",
+      "idCard": "ID-карта",
+      "driversLicense": "Водительское удостоверение"
+    },
+    "verifying": "Отправка...",
+    "verifyLevel": "Подтвердить уровень {{count}}",
+    "toasts": {
+      "registerSuccess": "Кошелек успешно зарегистрирован",
+      "registerFailed": "Не удалось зарегистрировать кошелек",
+      "kycVerified": "Уровень KYC {{level}} подтвержден",
+      "kycFailed": "Не удалось отправить KYC на проверку"
+    },
+    "tiers": {
+      "starter": {
+        "name": "Стартовый",
+        "limit": "До 50 000 KGST в месяц"
+      },
+      "standard": {
+        "name": "Стандартный",
+        "limit": "До 250 000 KGST в месяц"
+      },
+      "premium": {
+        "name": "Премиум",
+        "limit": "Без лимита и с наивысшим приоритетом поддержки"
+      }
+    },
+    "kycLevels": {
+      "none": {
+        "name": "Без верификации",
+        "description": "Доступ только на чтение. Переводы и повышенные лимиты остаются заблокированными."
+      },
+      "basic": {
+        "name": "Базовый",
+        "description": "Открывает начальный доступ после проверки email и телефона."
+      },
+      "enhanced": {
+        "name": "Расширенный",
+        "description": "Добавляет проверку документов для более высокого месячного лимита."
+      },
+      "full": {
+        "name": "Полный",
+        "description": "Добавляет адрес и расширенные проверки для максимальных операционных лимитов."
+      }
+    }
   },
   "admin": {
-    "title": "Панель администратора",
-    "campaigns": "Кампании",
-    "pending": "Ожидание одобрения",
-    "approved": "Одобренные",
-    "rejected": "Отклоненные",
-    "users": "Пользователи",
-    "statistics": "Статистика",
-    "approve": "Одобрить",
-    "reject": "Отклонить",
-    "noData": "Нет данных"
+    "title": "Админ",
+    "subtitle": "Проверяйте кампании, активность и черный список.",
+    "connectTitle": "Подключите админ-кошелек",
+    "connectBody": "Инструменты модерации и управления черным списком доступны только утвержденным администраторам.",
+    "accessDeniedTitle": "Доступ запрещен",
+    "accessDeniedBody": "Этот кошелек подключен, но у него нет прав администратора.",
+    "goHome": "На главную",
+    "tabs": {
+      "overview": "Обзор",
+      "moderation": "Модерация",
+      "blacklist": "Черный список"
+    },
+    "stats": {
+      "totalCampaigns": "Всего кампаний",
+      "pendingReview": "Ожидают проверки",
+      "approved": "Одобрено",
+      "rejected": "Отклонено",
+      "totalUsers": "Всего пользователей",
+      "contributions": "Взносы",
+      "kgstRaised": "Собрано KGST",
+      "blacklisted": "В черном списке"
+    },
+    "emptyModerationTitle": "Нет кампаний, ожидающих проверки",
+    "emptyModerationBody": "Очередь модерации сейчас пуста.",
+    "by": "Автор {{address}}",
+    "goal": "Цель {{amount}} KGST",
+    "createdOn": "Создана {{date}}",
+    "approveButton": "Одобрить",
+    "rejectButton": "Отклонить",
+    "blacklistTitle": "Черный список",
+    "addAddressButton": "Добавить",
+    "emptyBlacklistTitle": "Черный список пуст",
+    "emptyBlacklistBody": "Сейчас ни один адрес не заблокирован.",
+    "rejectModalTitle": "Отклонить кампанию",
+    "rejectModalBody": "Укажите понятную причину, чтобы основатель понимал, что нужно исправить.",
+    "rejectPlaceholder": "Причина отклонения",
+    "rejectCampaignButton": "Отклонить кампанию",
+    "blacklistModalTitle": "Добавить адрес в черный список",
+    "ethereumAddressLabel": "Ethereum-адрес",
+    "ethereumAddressPlaceholder": "0x...",
+    "blacklistReasonPlaceholder": "Объясните, почему этот адрес блокируется",
+    "addToBlacklistButton": "В список",
+    "confirmApprove": "Одобрить эту кампанию?",
+    "confirmRemoveBlacklist": "Удалить этот адрес из черного списка?",
+    "toasts": {
+      "loadFailed": "Не удалось загрузить данные администратора",
+      "approveSuccess": "Кампания одобрена",
+      "approveFailed": "Не удалось одобрить кампанию",
+      "rejectReasonRequired": "Укажите причину отклонения",
+      "rejectSuccess": "Кампания отклонена",
+      "rejectFailed": "Не удалось отклонить кампанию",
+      "fillAllFields": "Заполните все поля",
+      "invalidAddress": "Введите корректный адрес",
+      "addBlacklistSuccess": "Адрес добавлен в черный список",
+      "addBlacklistFailed": "Не удалось добавить адрес в черный список",
+      "removeBlacklistSuccess": "Адрес удален из черного списка",
+      "removeBlacklistFailed": "Не удалось удалить адрес из черного списка"
+    }
+  },
+  "governance": {
+    "notConfiguredTitle": "Управление еще не настроено",
+    "notConfiguredBody": "Во frontend пока не заданы адреса governance-контрактов. Разверните DAO-стек и укажите адреса GOV токена, DAO, реестра и стартовый блок перед использованием страницы.",
+    "heroKicker": "Ончейн-координация",
+    "title": "DAO",
+    "heroBody": "Предложения, голосование, постановка в очередь и исполнение происходят напрямую в {{network}}.",
+    "newProposal": "Новое",
+    "protocolKicker": "Контуры протокола",
+    "protocolTitle": "Конфиг",
+    "protocolBody": "Контракты governor, токена и реестра читаются напрямую из развернутого governance-стека.",
+    "protocolNote": "Сейчас интерфейс создает сигнальные ончейн-предложения. Исполняемые действия можно расширить, когда управлению будут доступны собственные контракты платформы.",
+    "walletKicker": "Контекст кошелька",
+    "walletTitle": "Профиль голоса",
+    "walletConnectBody": "Подключите кошелек, чтобы видеть делегирование и отправлять governance-действия.",
+    "delegateSelf": "Делегировать себе",
+    "walletNoGov": "На этом кошельке пока нет GOV. Он может просматривать предложения, но не может предлагать и голосовать, пока GOV не будет выпущен и делегирован.",
+    "loading": "Загрузка ончейн-состояния governance...",
+    "filterKicker": "Фильтр",
+    "empty": "Для этого фильтра предложений не найдено.",
+    "signalTag": "Сигнал",
+    "by": "Автор {{address}}",
+    "govCast": "{{amount}} GOV проголосовано",
+    "viewTx": "Открыть tx",
+    "createTitle": "Создать предложение",
+    "createHelper": "Эта форма создает сигнальное предложение напрямую в Governor. Голосование, очередь и исполнение происходят ончейн.",
+    "titlePlaceholder": "Сократить SLA модерации кампаний до 24 часов",
+    "descriptionPlaceholder": "Опишите изменение, его цель, ожидаемый результат и дальнейшие шаги по реализации.",
+    "fieldHelp": "Полное описание хранится ончейн и используется для вычисления хеша queue/execute.",
+    "creating": "Создание...",
+    "submitProposal": "Отправить предложение",
+    "notEnoughGov": "Недостаточно GOV",
+    "proposer": "Автор {{address}}",
+    "proposalId": "Предложение №{{id}}",
+    "snapshotBlock": "Блок снапшота",
+    "deadlineBlock": "Блок дедлайна",
+    "queuedEta": "ETA очереди",
+    "notQueued": "Не поставлено в очередь",
+    "viewCreationTx": "Tx создания",
+    "queueProposal": "В очередь",
+    "timelockNotReady": "Таймлок еще не готов",
+    "executeProposal": "Исполнить предложение",
+    "votes": "Голоса",
+    "delegationRequired": "Сначала делегируйте",
+    "delegationBody": "Голосовая сила GOV не активна, пока вы ее не делегируете. Самоделегирование обязательно перед голосованием.",
+    "castVote": "Голосовать",
+    "alreadyVoted": "Этот кошелек уже голосовал по снапшоту предложения.",
+    "voteReasonPlaceholder": "Причина вашего голоса (необязательно)",
+    "voteHistory": "История",
+    "filters": {
+      "all": "Все"
+    },
+    "labels": {
+      "deploymentBlock": "Стартовый блок",
+      "votingDelay": "Задержка голосования",
+      "votingPeriod": "Период голосования",
+      "quorum": "Кворум",
+      "blocks": "блоков",
+      "dao": "DAO",
+      "gov": "GOV",
+      "registry": "Реестр",
+      "govBalance": "Баланс GOV",
+      "votingPower": "Голосовая сила",
+      "delegate": "Делегат",
+      "proposalThreshold": "Порог",
+      "tokenHolders": "Держатели",
+      "totalProposals": "Предложения",
+      "active": "Активные",
+      "actionable": "Доступные к действию",
+      "votesCast": "Отдано голосов",
+      "proposalType": "Тип",
+      "title": "Название"
+    },
+    "statuses": {
+      "pending": "Ожидает",
+      "active": "Активно",
+      "succeeded": "Принято",
+      "queued": "В очереди",
+      "executed": "Исполнено",
+      "defeated": "Отклонено",
+      "cancelled": "Отменено",
+      "unknown": "Неизвестно"
+    },
+    "voteOptions": {
+      "for": "За",
+      "against": "Против",
+      "abstain": "Воздержаться"
+    },
+    "proposalTypes": {
+      "parameterChange": {
+        "label": "Параметры",
+        "description": "Обновить комиссии, лимиты или другие настройки платформы."
+      },
+      "treasurySpend": {
+        "label": "Казначейство",
+        "description": "Распределить средства казначейства через governance."
+      },
+      "contractUpgrade": {
+        "label": "Апгрейд",
+        "description": "Одобрить обновление контракта или конфигурации governance."
+      },
+      "emergency": {
+        "label": "Экстренное",
+        "description": "Скоординировать срочное governance-действие."
+      },
+      "campaignAppeal": {
+        "label": "Апелляция",
+        "description": "Эскалировать или пересмотреть решение модерации."
+      }
+    },
+    "proposal": {
+      "unknownTime": "Время неизвестно"
+    },
+    "toasts": {
+      "loadFailed": "Не удалось загрузить ончейн-данные governance",
+      "loadVotesFailed": "Не удалось загрузить историю голосов",
+      "connectVotingPowerFirst": "Сначала подключите кошелек с делегированным GOV",
+      "submittingProposal": "Отправка ончейн-предложения...",
+      "proposalSubmitted": "Ончейн-предложение отправлено",
+      "createFailed": "Не удалось создать предложение",
+      "submittingVote": "Отправка голоса в сеть...",
+      "voteRecorded": "Голос записан ончейн",
+      "voteFailed": "Не удалось проголосовать",
+      "delegating": "Делегирование GOV себе...",
+      "delegationComplete": "Делегирование завершено",
+      "delegateFailed": "Не удалось делегировать GOV",
+      "queueing": "Постановка предложения в очередь через таймлок...",
+      "queued": "Предложение поставлено в очередь",
+      "queueFailed": "Не удалось поставить предложение в очередь",
+      "executing": "Исполнение предложения...",
+      "executed": "Предложение исполнено ончейн",
+      "executeFailed": "Не удалось исполнить предложение"
+    }
+  },
+  "auth": {
+    "installMetaMask": "Пожалуйста, установите MetaMask, чтобы продолжить."
+  },
+  "buttons": {
+    "exploreCampaigns": "Обзор кампаний",
+    "viewDetails": "Подробнее",
+    "contribute": "Поддержать",
+    "backup": "Сохранить seed-фразу",
+    "loadMore": "Загрузить еще",
+    "loading": "Загрузка...",
+    "error": "Ошибка"
   },
   "errors": {
     "notFound": "Страница не найдена",
-    "unauthorized": "Вы не авторизованы для доступа к этой странице",
-    "serverError": "Ошибка сервера. Пожалуйста, попробуйте позже",
-    "walletNotConnected": "Сначала подключите ваш кошелек",
-    "invalidAmount": "Введено неверное количество",
+    "unauthorized": "У вас нет доступа к этой странице",
+    "serverError": "Ошибка сервера. Попробуйте позже",
+    "walletNotConnected": "Сначала подключите кошелек",
+    "invalidAmount": "Введена неверная сумма",
     "insufficientBalance": "Недостаточно средств"
   },
   "footer": {
-    "copyright": "© 2025 CrowdFund - Децентрализованная платформа краудфандинга",
-    "blockchain": "Построено на Polygon Amoy Testnet"
+    "copyright": "© 2026 KGST CrowdFund Platform",
+    "blockchain": "Построено на BNB Smart Chain Testnet и Polygon Amoy"
   },
   "common": {
     "loading": "Загрузка...",
@@ -143,6 +731,40 @@
     "no": "Нет",
     "email": "Электронная почта",
     "password": "Пароль",
-    "language": "Язык"
+    "language": "Язык",
+    "search": "Поиск",
+    "previous": "Назад",
+    "next": "Вперед",
+    "pageOf": "Страница {{page}} из {{total}}",
+    "goal": "Цель",
+    "continue": "Продолжить",
+    "back": "Назад",
+    "description": "Описание",
+    "category": "Категория",
+    "amount": "Сумма",
+    "type": "Тип",
+    "status": "Статус",
+    "date": "Дата",
+    "address": "Адрес",
+    "reason": "Причина",
+    "action": "Действие",
+    "remove": "Удалить",
+    "connectWallet": "Подключить кошелек",
+    "connectWalletFirst": "Сначала подключите кошелек",
+    "walletNotConnected": "Кошелек не подключен",
+    "transactionRejected": "Транзакция отклонена",
+    "processing": "Обработка...",
+    "wallet": "Кошелек",
+    "notSet": "Не задано",
+    "notProvided": "Не указано",
+    "contract": "Контракт",
+    "deadline": "Срок",
+    "noDeadline": "Без срока",
+    "ended": "Завершена",
+    "daysLeft": "Осталось {{count}} дней",
+    "hoursLeft": "Осталось {{count}} часов",
+    "endingSoon": "Скоро завершится",
+    "view": "Открыть",
+    "created": "Создано"
   }
 }

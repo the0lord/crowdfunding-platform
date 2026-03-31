@@ -20,6 +20,7 @@ contract CampaignFactoryClone is Ownable, ReentrancyGuard {
     
     // Platform settings
     address public platformWallet;
+    address public paymentToken; // KGST token address
     
     // Campaign registry
     address[] public campaigns;
@@ -65,6 +66,7 @@ contract CampaignFactoryClone is Ownable, ReentrancyGuard {
     event ModeratorAdded(address indexed moderator);
     event ModeratorRemoved(address indexed moderator);
     event PlatformWalletUpdated(address indexed oldWallet, address indexed newWallet);
+    event PaymentTokenUpdated(address indexed oldToken, address indexed newToken);
     
     // Rejection codes
     bytes32 public constant REJECTION_SCAM = keccak256("SCAM");
@@ -89,12 +91,18 @@ contract CampaignFactoryClone is Ownable, ReentrancyGuard {
      * @param _platformWallet Address to receive platform fees
      * @param _campaignImplementation Address of Campaign implementation contract
      */
-    constructor(address _platformWallet, address _campaignImplementation) Ownable(msg.sender) {
+    constructor(
+        address _platformWallet,
+        address _campaignImplementation,
+        address _paymentToken
+    ) Ownable(msg.sender) {
         require(_platformWallet != address(0), "Invalid platform wallet");
         require(_campaignImplementation != address(0), "Invalid implementation");
+        require(_paymentToken != address(0), "Invalid payment token");
         
         platformWallet = _platformWallet;
         campaignImplementation = _campaignImplementation;
+        paymentToken = _paymentToken;
         moderators[msg.sender] = true;
     }
     
@@ -141,7 +149,8 @@ contract CampaignFactoryClone is Ownable, ReentrancyGuard {
             _title,
             _description,
             _imageURI,
-            platformWallet
+            platformWallet,
+            paymentToken
         );
         
         // Update registry
@@ -286,6 +295,17 @@ contract CampaignFactoryClone is Ownable, ReentrancyGuard {
         address oldWallet = platformWallet;
         platformWallet = _newWallet;
         emit PlatformWalletUpdated(oldWallet, _newWallet);
+    }
+    
+    /**
+     * @notice Update payment token (owner only)
+     * @dev Only affects NEW campaigns. Existing campaigns keep their token.
+     */
+    function setPaymentToken(address _newToken) external onlyOwner {
+        require(_newToken != address(0), "Invalid token");
+        address oldToken = paymentToken;
+        paymentToken = _newToken;
+        emit PaymentTokenUpdated(oldToken, _newToken);
     }
     
     /**

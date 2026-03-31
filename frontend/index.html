@@ -9,6 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta name="description" content="A decentralized crowdfunding platform built on blockchain technology. Support innovative projects with complete transparency.">
     <meta name="theme-color" content="#6366f1">
+    <script>
+      // Polyfill process for Web3Auth's internal stream/util libraries
+      if (typeof globalThis.process === 'undefined') globalThis.process = {};
+      if (!globalThis.process.env) globalThis.process.env = {};
+      if (typeof globalThis.process.nextTick !== 'function') {
+        globalThis.process.nextTick = function(fn) {
+          var args = Array.prototype.slice.call(arguments, 1);
+          queueMicrotask(function() { fn.apply(null, args); });
+        };
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

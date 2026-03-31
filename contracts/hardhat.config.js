@@ -3,19 +3,31 @@ require("@nomicfoundation/hardhat-verify");
 require("dotenv").config();
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000000";
-const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "";
+const ETHERSCAN_API_KEY =
+  process.env.ETHERSCAN_API_KEY ||
+  process.env.POLYGONSCAN_API_KEY ||
+  process.env.BSCSCAN_API_KEY ||
+  "";
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY || "";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
-    version: "0.8.20",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers: [
+      {
+        version: "0.8.20",
+        settings: {
+          optimizer: { enabled: true, runs: 200 },
+        },
       },
-    },
+      {
+        version: "0.8.27",
+        settings: {
+          optimizer: { enabled: true, runs: 200 },
+          evmVersion: "cancun",
+        },
+      },
+    ],
   },
   
   networks: {
@@ -47,6 +59,22 @@ module.exports = {
       gasPrice: 30000000000, // 30 Gwei
     },
     
+    // BSC Testnet (for KGST campaigns)
+    bscTestnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      chainId: 97,
+      accounts: [PRIVATE_KEY],
+      gasPrice: 100000000, // 0.1 Gwei (BSC testnet minimum)
+    },
+    
+    // BSC Mainnet (real KGST at 0x94be0bbA8E1E303fE998c9360B57b826F1A4f828)
+    bsc: {
+      url: "https://bsc-dataseed.bnbchain.org/",
+      chainId: 56,
+      accounts: [PRIVATE_KEY],
+      gasPrice: 3000000000, // 3 Gwei
+    },
+    
     // opBNB Testnet
     opbnbTestnet: {
       url: "https://opbnb-testnet-rpc.bnbchain.org",
@@ -65,7 +93,8 @@ module.exports = {
   },
   
   etherscan: {
-    apiKey: POLYGONSCAN_API_KEY, // Etherscan V2 format
+    // A single key enables Hardhat's Etherscan V2 path for all supported chains.
+    apiKey: ETHERSCAN_API_KEY,
     customChains: [
       {
         network: "opbnb",
@@ -81,14 +110,6 @@ module.exports = {
         urls: {
           apiURL: "https://api-opbnb-testnet.bscscan.com/api",
           browserURL: "https://opbnb-testnet.bscscan.com"
-        }
-      },
-      {
-        network: "polygonAmoy",
-        chainId: 80002,
-        urls: {
-          apiURL: "https://api-amoy.polygonscan.com/api",
-          browserURL: "https://amoy.polygonscan.com"
         }
       }
     ]

@@ -9,6 +9,9 @@ import CampaignDetail from './pages/CampaignDetail';
 import CreateCampaign from './pages/CreateCampaign';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import Bridge from './pages/Bridge';
+import WalletPage from './pages/Wallet';
+import Governance from './pages/Governance';
 import './App.css';
 
 function App() {
@@ -27,6 +30,9 @@ function App() {
               <Route path="/create" element={<CreateCampaign />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/bridge" element={<Bridge />} />
+              <Route path="/wallet" element={<WalletPage />} />
+              <Route path="/governance" element={<Governance />} />
             </Routes>
           </main>
           <footer className="footer">

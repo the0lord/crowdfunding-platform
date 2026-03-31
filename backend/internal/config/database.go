@@ -30,6 +30,12 @@ func InitDB(cfg *Config) (*gorm.DB, error) {
 		&models.CampaignUpdate{},
 		&models.ModerationLog{},
 		&models.BlacklistedAddress{},
+		// KGST Platform models
+		&models.UserWallet{},
+		&models.BridgeTransaction{},
+		&models.Proposal{},
+		&models.ProposalVote{},
+		&models.GOVReward{},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to auto-migrate: %w", err)

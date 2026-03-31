@@ -5,14 +5,34 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/the0lord/crowdfunding-platform/backend/internal/models"
 	"gorm.io/gorm"
 )
 
+// expireOldCampaigns marks campaigns whose deadline has passed as Failed or Successful
+func expireOldCampaigns(db *gorm.DB) {
+	now := time.Now()
+
+	// Mark campaigns that passed deadline without meeting goal as "Failed"
+	db.Model(&models.Campaign{}).
+		Where("state = ? AND deadline < ?", "Active", now).
+		Where("CAST(total_raised AS DECIMAL) < CAST(goal_amount AS DECIMAL)").
+		Updates(map[string]interface{}{"state": "Failed"})
+
+	// Mark campaigns that passed deadline AND met goal as "Successful"
+	db.Model(&models.Campaign{}).
+		Where("state = ? AND deadline < ?", "Active", now).
+		Where("CAST(total_raised AS DECIMAL) >= CAST(goal_amount AS DECIMAL)").
+		Updates(map[string]interface{}{"state": "Successful"})
+}
+
 func GetCampaigns(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Auto-expire old campaigns before listing
+		expireOldCampaigns(db)
 		// Pagination with validation
 		page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 		pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))

@@ -127,9 +127,9 @@ const contributionReceivedTemplate = `
         <div class="content">
             <p>Hello {{.FounderName}},</p>
             <p>Your campaign <strong>"{{.CampaignTitle}}"</strong> just received a contribution!</p>
-            <p class="amount">{{.Amount}} POL</p>
+            <p class="amount">{{.Amount}} KGST</p>
             <p>From: {{.ContributorAddress}}</p>
-            <p>Transaction: <a href="{{.TransactionURL}}">View on PolygonScan</a></p>
+            <p>Transaction: <a href="{{.TransactionURL}}">View on BscScan</a></p>
             <p style="margin-top: 20px;">Keep up the great work!</p>
             <p>- The Crowdfunding Team</p>
         </div>

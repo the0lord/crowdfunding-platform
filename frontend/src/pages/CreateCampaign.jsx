@@ -1,29 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { campaignAPI } from '../services/api';
+import { getFactory, getSigner, ensureBSCChain, explorerTxUrl, CAMPAIGN_CHAIN } from '../contracts';
 import toast from 'react-hot-toast';
 import './CreateCampaign.css';
 
-const FACTORY_ADDRESS = '0x94B09c15E4E8f96D23883E1b24fD872EA6e06EF0';
-const FACTORY_ABI = [
-  "function createCampaign(uint256 _goalAmount, uint256 _durationDays, string memory _title, string memory _description, string memory_imageURI) external returns (address)",
-  "event CampaignCreated(address indexed campaign, address indexed founder, uint256 goalAmount, uint256 deadline, uint256 campaignId)"
-];
-
 const categories = [
-  'Technology',
-  'Creative',
-  'Community',
-  'Education',
-  'Environment',
-  'Health',
-  'Other'
+  'technology',
+  'creative',
+  'community',
+  'education',
+  'environment',
+  'health',
+  'other'
 ];
 
 export default function CreateCampaign() {
-  const { user, isConnected, connect } = useAuth();
+  const { t, i18n } = useTranslation();
+  const { user, isConnected, connect, provider } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -36,6 +33,29 @@ export default function CreateCampaign() {
     imageUrl: ''
   });
 
+  const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
+
+  const formatCategory = (value) => (value ? t(`categories.${value}`) : t('common.notProvided'));
+
+  const getCreateErrorMessage = (error) => {
+    if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
+      return t('common.transactionRejected');
+    }
+
+    const message = String(error?.reason || error?.shortMessage || error?.message || '');
+
+    if (message.includes('Goal must be > 0')) return t('createCampaign.errors.goalPositive');
+    if (message.includes('Goal too high')) return t('createCampaign.errors.goalTooHigh');
+    if (message.includes('Duration must be')) return t('createCampaign.errors.durationRange');
+    if (message.includes('Title must be')) return t('createCampaign.errors.titleLength');
+    if (message.includes('Description must be')) return t('createCampaign.errors.descriptionLength');
+    if (message.includes('Image URI required')) return t('createCampaign.errors.imageRequired');
+    if (message.includes('Too many pending')) return t('createCampaign.errors.tooManyPending');
+    if (message.toLowerCase().includes('blacklisted')) return t('createCampaign.errors.blacklisted');
+
+    return t('createCampaign.errors.createFailed');
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -45,37 +65,37 @@ export default function CreateCampaign() {
     switch (stepNum) {
       case 1:
         if (!formData.title.trim()) {
-          toast.error('Title is required');
+          toast.error(t('createCampaign.errors.titleRequired'));
           return false;
         }
         if (formData.title.length < 10 || formData.title.length > 200) {
-          toast.error('Title must be 10-200 characters');
+          toast.error(t('createCampaign.errors.titleLength'));
           return false;
         }
         if (!formData.description.trim()) {
-          toast.error('Description is required');
+          toast.error(t('createCampaign.errors.descriptionRequired'));
           return false;
         }
         if (formData.description.length < 50) {
-          toast.error('Description must be at least 50 characters');
+          toast.error(t('createCampaign.errors.descriptionLength'));
           return false;
         }
         if (!formData.category) {
-          toast.error('Please select a category');
+          toast.error(t('createCampaign.errors.categoryRequired'));
           return false;
         }
         return true;
       case 2:
         if (!formData.goalAmount || parseFloat(formData.goalAmount) <= 0) {
-          toast.error('Goal amount must be greater than 0');
+          toast.error(t('createCampaign.errors.goalPositive'));
           return false;
         }
-        if (parseFloat(formData.goalAmount) > 1000) {
-          toast.error('Goal amount cannot exceed 1000 POL');
+        if (parseFloat(formData.goalAmount) > 1000000) {
+          toast.error(t('createCampaign.errors.goalLimit'));
           return false;
         }
         if (formData.durationDays < 7 || formData.durationDays > 90) {
-          toast.error('Duration must be between 7 and 90 days');
+          toast.error(t('createCampaign.errors.durationRange'));
           return false;
         }
         return true;
@@ -104,16 +124,16 @@ export default function CreateCampaign() {
 
     setLoading(true);
     try {
-      // Check if MetaMask is available
-      if (!window.ethereum) {
-        toast.error('Please install MetaMask to create a campaign');
+      if (!provider) {
+        toast.error(t('common.connectWalletFirst'));
         return;
       }
 
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      
-      const factory = new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
+      // Ensure user is on BSC chain
+      await ensureBSCChain(provider);
+
+      const signer = await getSigner(provider);
+      const factory = getFactory(signer);
 
       // Convert goal to wei
       const goalInWei = ethers.parseEther(formData.goalAmount);
@@ -132,7 +152,7 @@ export default function CreateCampaign() {
         imageURI
       });
 
-      toast.loading('Creating campaign on blockchain...', { id: 'tx' });
+      toast.loading(t('createCampaign.toasts.creatingOnChain'), { id: 'tx' });
       
       // Call the correct function signature
       const tx = await factory.createCampaign(
@@ -145,7 +165,7 @@ export default function CreateCampaign() {
       
       console.log('Transaction sent:', tx.hash);
       
-      toast.loading('Waiting for confirmation...', { id: 'tx' });
+      toast.loading(t('createCampaign.toasts.waitingConfirmation'), { id: 'tx' });
       const receipt = await tx.wait();
       console.log('Transaction confirmed:', receipt);
 
@@ -168,13 +188,13 @@ export default function CreateCampaign() {
       const deadlineTimestamp = Math.floor(Date.now() / 1000) + (durationDays * 24 * 60 * 60);
 
       // Save to backend
-      toast.loading('Saving campaign details...', { id: 'tx' });
+      toast.loading(t('createCampaign.toasts.savingDetails'), { id: 'tx' });
       
       try {
         await campaignAPI.create({
           title: formData.title,
           description: formData.description,
-          category: formData.category.toLowerCase(),
+          category: formData.category,
           goal_amount: goalInWei.toString(),
           deadline: new Date(deadlineTimestamp * 1000).toISOString(),
           image_url: imageURI,
@@ -187,41 +207,12 @@ export default function CreateCampaign() {
         // Don't fail if backend save fails - the campaign is already on blockchain
       }
 
-      toast.success('Campaign created successfully!', { id: 'tx' });
+      toast.success(t('createCampaign.toasts.createdSuccess'), { id: 'tx' });
       navigate('/campaigns');
     } catch (error) {
       console.error('Error creating campaign:', error);
-      
-      // Parse error message
-      let errorMessage = 'Failed to create campaign';
-      if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
-        errorMessage = 'Transaction was rejected';
-      } else if (error.reason) {
-        errorMessage = error.reason;
-      } else if (error.message) {
-        // Extract meaningful part of error
-        if (error.message.includes('Goal must be > 0')) {
-          errorMessage = 'Goal amount must be greater than 0';
-        } else if (error.message.includes('Goal too high')) {
-          errorMessage = 'Goal amount is too high (max 1000 POL)';
-        } else if (error.message.includes('Duration must be')) {
-          errorMessage = 'Duration must be between 7 and 90 days';
-        } else if (error.message.includes('Title must be')) {
-          errorMessage = 'Title must be 10-200 characters';
-        } else if (error.message.includes('Description must be')) {
-          errorMessage = 'Description must be at least 50 characters';
-        } else if (error.message.includes('Image URI required')) {
-          errorMessage = 'Image URL is required';
-        } else if (error.message.includes('Too many pending')) {
-          errorMessage = 'You have too many pending campaigns (max 3)';
-        } else if (error.message.includes('blacklisted')) {
-          errorMessage = 'Your address has been blacklisted';
-        } else {
-          errorMessage = error.message.substring(0, 100);
-        }
-      }
-      
-      toast.error(errorMessage, { id: 'tx' });
+
+      toast.error(getCreateErrorMessage(error), { id: 'tx' });
     } finally {
       setLoading(false);
     }
@@ -233,10 +224,10 @@ export default function CreateCampaign() {
         <div className="container">
           <div className="connect-prompt">
             <div className="prompt-icon">🔐</div>
-            <h2>Connect Your Wallet</h2>
-            <p>You need to connect your wallet to create a campaign</p>
+            <h2>{t('createCampaign.connectTitle')}</h2>
+            <p>{t('createCampaign.connectBody')}</p>
             <button className="btn btn-primary btn-lg" onClick={connect}>
-              Connect Wallet
+              {t('common.connectWallet')}
             </button>
           </div>
         </div>
@@ -252,56 +243,54 @@ export default function CreateCampaign() {
           <div className="progress-steps">
             <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>
               <div className="step-number">1</div>
-              <div className="step-label">Details</div>
+              <div className="step-label">{t('createCampaign.steps.details')}</div>
             </div>
             <div className="step-connector"></div>
             <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>
               <div className="step-number">2</div>
-              <div className="step-label">Funding</div>
+              <div className="step-label">{t('createCampaign.steps.funding')}</div>
             </div>
             <div className="step-connector"></div>
             <div className={`progress-step ${step >= 3 ? 'active' : ''}`}>
               <div className="step-number">3</div>
-              <div className="step-label">Review</div>
+              <div className="step-label">{t('createCampaign.steps.review')}</div>
             </div>
           </div>
 
           {/* Step 1: Campaign Details */}
           {step === 1 && (
             <div className="form-step">
-              <h2>Campaign Details</h2>
-              <p className="step-description">
-                Tell us about your campaign. Make it compelling!
-              </p>
+              <h2>{t('createCampaign.detailsTitle')}</h2>
+              <p className="step-description">{t('createCampaign.detailsBody')}</p>
 
               <div className="form-group">
-                <label>Campaign Title *</label>
+                <label>{t('createCampaign.fields.title')} *</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  placeholder="Enter a catchy title for your campaign"
+                  placeholder={t('createCampaign.placeholders.title')}
                   maxLength={200}
                 />
-                <span className="char-count">{formData.title.length}/200 (min 10)</span>
+                <span className="char-count">{t('createCampaign.titleCount', { count: formData.title.length })}</span>
               </div>
 
               <div className="form-group">
-                <label>Description *</label>
+                <label>{t('common.description')} *</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Describe your campaign in detail. What are you building? Why should people contribute?"
+                  placeholder={t('createCampaign.placeholders.description')}
                   rows={6}
                   maxLength={5000}
                 />
-                <span className="char-count">{formData.description.length}/5000 (min 50)</span>
+                <span className="char-count">{t('createCampaign.descriptionCount', { count: formData.description.length })}</span>
               </div>
 
               <div className="form-group">
-                <label>Category *</label>
+                <label>{t('common.category')} *</label>
                 <div className="category-grid">
                   {categories.map(cat => (
                     <button
@@ -310,27 +299,27 @@ export default function CreateCampaign() {
                       className={`category-btn ${formData.category === cat ? 'selected' : ''}`}
                       onClick={() => setFormData(prev => ({ ...prev, category: cat }))}
                     >
-                      {cat}
+                      {t(`categories.${cat}`)}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="form-group">
-                <label>Campaign Image URL *</label>
+                <label>{t('createCampaign.fields.imageUrl')}</label>
                 <input
                   type="url"
                   name="imageUrl"
                   value={formData.imageUrl}
                   onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
+                  placeholder={t('createCampaign.placeholders.imageUrl')}
                 />
-                <span className="input-hint">Required - URL to your campaign's cover image</span>
+                <span className="input-hint">{t('createCampaign.imageHint')}</span>
               </div>
 
               <div className="form-actions">
                 <button type="button" className="btn btn-primary" onClick={nextStep}>
-                  Continue →
+                  {t('common.continue')} →
                 </button>
               </div>
             </div>
@@ -339,28 +328,26 @@ export default function CreateCampaign() {
           {/* Step 2: Funding Details */}
           {step === 2 && (
             <div className="form-step">
-              <h2>Funding Details</h2>
-              <p className="step-description">
-                Set your funding goal and campaign duration
-              </p>
+              <h2>{t('createCampaign.fundingTitle')}</h2>
+              <p className="step-description">{t('createCampaign.fundingBody')}</p>
 
               <div className="form-group">
-                <label>Funding Goal (POL) *</label>
+                <label>{t('createCampaign.fields.goalAmount')} *</label>
                 <input
                   type="number"
                   name="goalAmount"
                   value={formData.goalAmount}
                   onChange={handleChange}
-                  placeholder="10"
+                  placeholder={t('createCampaign.placeholders.goalAmount')}
                   min="0.01"
                   max="1000"
                   step="0.01"
                 />
-                <span className="input-hint">Range: 0.01 - 1000 POL</span>
+                <span className="input-hint">{t('createCampaign.goalHint')}</span>
               </div>
 
               <div className="form-group">
-                <label>Campaign Duration (Days) *</label>
+                <label>{t('createCampaign.fields.durationDays')} *</label>
                 <input
                   type="range"
                   name="durationDays"
@@ -369,18 +356,20 @@ export default function CreateCampaign() {
                   min="7"
                   max="90"
                 />
-                <div className="range-value">{formData.durationDays} days</div>
+                <div className="range-value">{t('createCampaign.durationValue', { count: formData.durationDays })}</div>
                 <span className="input-hint">
-                  Campaign will end on: {new Date(Date.now() + formData.durationDays * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                  {t('createCampaign.endsOn', {
+                    date: new Date(Date.now() + formData.durationDays * 24 * 60 * 60 * 1000).toLocaleDateString(locale),
+                  })}
                 </span>
               </div>
 
               <div className="form-actions">
                 <button type="button" className="btn btn-secondary" onClick={prevStep}>
-                  ← Back
+                  ← {t('common.back')}
                 </button>
                 <button type="button" className="btn btn-primary" onClick={nextStep}>
-                  Continue →
+                  {t('common.continue')} →
                 </button>
               </div>
             </div>
@@ -389,55 +378,53 @@ export default function CreateCampaign() {
           {/* Step 3: Review */}
           {step === 3 && (
             <div className="form-step">
-              <h2>Review Your Campaign</h2>
-              <p className="step-description">
-                Make sure everything looks good before creating
-              </p>
+              <h2>{t('createCampaign.reviewTitle')}</h2>
+              <p className="step-description">{t('createCampaign.reviewBody')}</p>
 
               <div className="review-card">
                 <div className="review-section">
-                  <h3>Campaign Details</h3>
+                  <h3>{t('createCampaign.sections.campaignDetails')}</h3>
                   <div className="review-item">
-                    <span className="label">Title</span>
+                    <span className="label">{t('createCampaign.fields.title')}</span>
                     <span className="value">{formData.title}</span>
                   </div>
                   <div className="review-item">
-                    <span className="label">Category</span>
-                    <span className="value">{formData.category}</span>
+                    <span className="label">{t('common.category')}</span>
+                    <span className="value">{formatCategory(formData.category)}</span>
                   </div>
                   <div className="review-item">
-                    <span className="label">Description</span>
+                    <span className="label">{t('common.description')}</span>
                     <span className="value description">{formData.description}</span>
                   </div>
                 </div>
 
                 <div className="review-section">
-                  <h3>Funding Details</h3>
+                  <h3>{t('createCampaign.sections.fundingDetails')}</h3>
                   <div className="review-item">
-                    <span className="label">Goal Amount</span>
-                    <span className="value">{formData.goalAmount} POL</span>
+                    <span className="label">{t('createCampaign.fields.goalAmount')}</span>
+                    <span className="value">{formData.goalAmount} KGST</span>
                   </div>
                   <div className="review-item">
-                    <span className="label">Duration</span>
-                    <span className="value">{formData.durationDays} days</span>
+                    <span className="label">{t('createCampaign.fields.durationDays')}</span>
+                    <span className="value">{t('createCampaign.durationValue', { count: formData.durationDays })}</span>
                   </div>
                   <div className="review-item">
-                    <span className="label">End Date</span>
+                    <span className="label">{t('createCampaign.fields.endDate')}</span>
                     <span className="value">
-                      {new Date(Date.now() + formData.durationDays * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                      {new Date(Date.now() + formData.durationDays * 24 * 60 * 60 * 1000).toLocaleDateString(locale)}
                     </span>
                   </div>
                 </div>
 
                 <div className="review-section">
-                  <h3>Media</h3>
+                  <h3>{t('createCampaign.sections.media')}</h3>
                   <div className="review-item">
-                    <span className="label">Image URL</span>
-                    <span className="value">{formData.imageUrl || 'Not provided'}</span>
+                    <span className="label">{t('createCampaign.fields.imageUrl')}</span>
+                    <span className="value">{formData.imageUrl || t('common.notProvided')}</span>
                   </div>
                   {formData.imageUrl && (
                     <div className="review-image">
-                      <img src={formData.imageUrl} alt="Campaign preview" />
+                      <img src={formData.imageUrl} alt={t('createCampaign.previewAlt')} />
                     </div>
                   )}
                 </div>
@@ -446,14 +433,13 @@ export default function CreateCampaign() {
               <div className="notice">
                 <span className="notice-icon">ℹ️</span>
                 <div>
-                  <strong>Please note:</strong> Your campaign will need to be approved by moderators before going live.
-                  This usually takes 24-48 hours.
+                  <strong>{t('createCampaign.noticeTitle')}</strong> {t('createCampaign.noticeBody')}
                 </div>
               </div>
 
               <div className="form-actions">
                 <button type="button" className="btn btn-secondary" onClick={prevStep}>
-                  ← Back
+                  ← {t('common.back')}
                 </button>
                 <button 
                   type="button"
@@ -461,7 +447,7 @@ export default function CreateCampaign() {
                   onClick={handleSubmit}
                   disabled={loading}
                 >
-                  {loading ? 'Creating...' : 'Create Campaign'}
+                  {loading ? t('createCampaign.creating') : t('nav.createCampaign')}
                 </button>
               </div>
             </div>

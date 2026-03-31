@@ -1,134 +1,722 @@
 {
   "nav": {
+    "brand": "KGST CrowdFund",
     "home": "Home",
     "campaigns": "Campaigns",
-    "createCampaign": "Create Campaign",
-    "myDashboard": "My Dashboard",
+    "createCampaign": "Create",
+    "bridge": "Bridge",
+    "wallet": "Wallet",
+    "dao": "DAO",
+    "myDashboard": "Dashboard",
     "admin": "Admin",
     "connectWallet": "Connect Wallet",
     "connecting": "Connecting...",
     "disconnect": "Disconnect",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "signIn": "Sign In",
+    "connectMetaMask": "Connect MetaMask",
+    "languageEnglish": "English",
+    "languageRussian": "Russian",
+    "tools": "Tools",
+    "menu": "Menu",
+    "closeMenu": "Close menu"
   },
   "hero": {
-    "title": "Fund the Future",
+    "title": "Fund the",
     "titleHighlight": "Future",
     "subtitle": "A decentralized crowdfunding platform built on blockchain technology. Support innovative projects with complete transparency.",
-    "exploreCampaigns": "Explore Campaigns",
-    "createCampaign": "Create Campaign",
-    "connectToStart": "Connect to Start"
+    "exploreCampaigns": "Explore",
+    "createCampaign": "Create",
+    "connectToStart": "Connect"
   },
   "stats": {
-    "activeCampaigns": "Active Campaigns",
-    "successfulCampaigns": "Successful Campaigns",
-    "totalRaised": "Total Raised"
+    "activeCampaigns": "Active",
+    "successfulCampaigns": "Funded",
+    "totalRaised": "Raised"
   },
   "campaigns": {
     "title": "Featured Campaigns",
     "viewAll": "View All Campaigns",
     "by": "by",
-    "progress": "Progress",
-    "timeLeft": "Time left",
-    "goal": "Goal",
-    "raised": "Raised",
-    "days": "days",
+    "raised": "raised",
     "noData": "No campaign data"
   },
   "features": {
-    "title": "Why Choose CrowdFund?",
+    "title": "Why KGST",
     "decentralized": {
       "title": "Fully Decentralized",
-      "description": "Built on blockchain with smart contracts for transparency"
+      "description": "Smart contracts, transparent treasury logic, and auditable state changes stay visible end to end."
     },
     "secure": {
       "title": "Highly Secure",
-      "description": "Your funds are protected by cryptographic security"
+      "description": "Escrow-sensitive flows and wallet actions are routed through explicit on-chain permissions."
     },
     "transparent": {
       "title": "100% Transparent",
-      "description": "All transactions are recorded on the blockchain"
+      "description": "Campaign state, governance outcomes, and bridge requests can be reviewed without hidden logic."
     }
   },
-  "buttons": {
-    "exploreCampaigns": "Explore Campaigns",
-    "viewDetails": "View Details",
-    "contribute": "Contribute",
-    "backup": "Backup Seed",
-    "loadMore": "Load More",
-    "loading": "Loading...",
-    "error": "Error"
+  "categories": {
+    "all": "All categories",
+    "technology": "Technology",
+    "creative": "Creative",
+    "community": "Community",
+    "education": "Education",
+    "environment": "Environment",
+    "health": "Health",
+    "other": "Other"
   },
-  "campaignList": {
-    "title": "All Campaigns",
-    "search": "Search campaigns...",
-    "filter": "Filter",
-    "sortBy": "Sort by",
+  "campaignStates": {
     "active": "Active",
     "successful": "Successful",
     "failed": "Failed",
-    "all": "All",
-    "noResults": "No campaigns found"
+    "cancelled": "Cancelled"
   },
-  "campaignDetail": {
-    "creator": "Creator",
-    "category": "Category",
-    "description": "Description",
-    "goal": "Funding Goal",
-    "deadline": "Deadline",
-    "raised": "Amount Raised",
-    "backersCount": "Number of Backers",
-    "contribute": "Contribute Now",
-    "updates": "Updates",
-    "comments": "Comments",
-    "noUpdates": "No updates yet",
-    "enterAmount": "Enter amount in MATIC",
-    "confirm": "Confirm Contribution"
+  "moderationStatuses": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
   },
-  "createCampaign": {
-    "title": "Create Your Campaign",
-    "formTitle": "Campaign Details",
-    "campaignTitle": "Campaign Title",
-    "description": "Description",
-    "category": "Category",
-    "fundingGoal": "Funding Goal (MATIC)",
-    "deadline": "Deadline",
-    "imageUrl": "Campaign Image URL",
-    "create": "Create Campaign",
-    "success": "Campaign created successfully",
-    "error": "Error creating campaign"
+  "homePage": {
+    "eyebrow": "KGST funding rail",
+    "heroTail": "for founders, backers, and transparent treasury decisions.",
+    "heroSupport": "A crowdfunding platform built for trusted launches, transparent escrow, and DAO-backed decisions.",
+    "platformPulse": "Platform pulse",
+    "platformPulseTitle": "Live metrics",
+    "platformPulseBody": "A quick read on campaign flow, visible volume, and launch quality.",
+    "successRate": "Success rate",
+    "averageRaise": "avg. raise",
+    "metricNoteCampaigns": "Approved launches currently visible",
+    "metricNoteSuccess": "Campaigns that already hit goal",
+    "metricNoteRaised": "Visible KGST volume in this snapshot",
+    "campaignRail": "Campaigns",
+    "campaignRailSummary": "BSC carries campaign execution, contribution flow, and KGST settlement.",
+    "governanceRail": "Governance",
+    "governanceRailSummary": "Polygon Amoy carries delegation, voting, and treasury signaling.",
+    "factoryLabel": "Factory",
+    "tokenLabel": "KGST",
+    "governanceLabel": "Crowdfund DAO",
+    "registryLabel": "Registry",
+    "campaignChainLabel": "Campaign chain",
+    "governanceChainLabel": "Governance chain",
+    "deployed": "Deployed",
+    "notDeployed": "Not deployed",
+    "live": "Live",
+    "pending": "Pending",
+    "governanceReady": "Governance live",
+    "governancePending": "Governance pending",
+    "featureKickerSecure": "Escrow",
+    "featureBodySecure": "Founders unlock funds only after goal and deadline conditions are met on-chain.",
+    "featureKickerDecentralized": "Speed",
+    "featureBodyDecentralized": "A compact bento layout keeps status, volume, and readiness readable at a glance.",
+    "featureKickerTransparent": "Governance",
+    "featureBodyTransparent": "Thresholds, voting windows, and contract surfaces stay readable inside the product.",
+    "sectionValueTitle": "Built for trusted funding",
+    "sectionValueBody": "Every surface is shaped around campaign clarity, escrow visibility, and accountable governance.",
+    "chipEscrow": "Campaign escrow",
+    "chipGovernance": "DAO voting",
+    "chipI18n": "BSC + Polygon",
+    "sectionFeaturedTitle": "Featured campaigns",
+    "sectionFeaturedBody": "Discover vetted launches with visible traction and clean funding progress.",
+    "goalLabel": "Goal",
+    "backersLabel": "Backers",
+    "daysLeft": "{{count}} days left",
+    "endsSoon": "Ends in 1 day",
+    "ended": "Ended",
+    "noDeadline": "No deadline",
+    "sectionProtocolTitle": "Protocol",
+    "protocolHeadline": "Two chains, one clear surface",
+    "sectionProtocolBody": "Core rails, contract addresses, and network status stay visible in one place.",
+    "protocolSurfaceTitle": "Contracts and rails",
+    "openInExplorer": "Open"
+  },
+  "campaignList": {
+    "kicker": "Directory",
+    "title": "Campaigns",
+    "description": "Browse reviewed launches and open each campaign with full on-chain context.",
+    "visibleLabel": "Visible",
+    "pageLabel": "Page",
+    "totalPagesLabel": "Pages",
+    "searchPlaceholder": "Search campaigns",
+    "allStates": "All states",
+    "funded": "Funded",
+    "loading": "Loading campaigns...",
+    "noResultsTitle": "No matches",
+    "noResultsBody": "Try a different search term or broaden the filters.",
+    "backersCount": "{{count}} backers",
+    "raisedSummary": "{{amount}} KGST raised",
+    "raisedLabel": "Raised"
   },
   "dashboard": {
-    "title": "My Dashboard",
-    "myCampaigns": "My Campaigns",
-    "contributions": "My Contributions",
-    "wallet": "Wallet",
-    "balance": "Balance",
-    "noCampaigns": "You haven't created any campaigns yet",
-    "noContributions": "You haven't contributed to any campaigns yet"
+    "title": "Dashboard",
+    "heroKicker": "Account",
+    "heroBody": "Track launch performance, contribution history, and moderation in one compact view.",
+    "connectTitle": "Connect to open dashboard",
+    "connectBody": "Campaigns you launched and contributions you made will appear here once a wallet is connected.",
+    "metrics": {
+      "launchedLabel": "Launched",
+      "launchedNote": "Created from this wallet",
+      "raisedLabel": "Raised",
+      "raisedNote": "Visible volume across your launches",
+      "backedLabel": "Backed",
+      "backedNote": "{{count}} contributions"
+    },
+    "tabs": {
+      "campaigns": "{{count}} campaigns",
+      "contributions": "{{count}} contributions"
+    },
+    "emptyCampaignsTitle": "No launches yet",
+    "emptyCampaignsBody": "Create your first campaign to start collecting support.",
+    "campaignKicker": "Campaign",
+    "fields": {
+      "progress": "Progress",
+      "raised": "Raised",
+      "goal": "Goal",
+      "created": "Created",
+      "backers": "Backers"
+    },
+    "createdOn": "Created {{date}}",
+    "backersCount": "{{count}} backers",
+    "emptyContributionsTitle": "No contributions yet",
+    "emptyContributionsBody": "Support a campaign and it will appear in this history.",
+    "contributionKicker": "Contribution",
+    "campaignFallback": "Campaign #{{id}}",
+    "viewCampaign": "Open"
+  },
+  "bridge": {
+    "title": "Bridge",
+    "connectBody": "Connect a wallet to move between KGS and KGST.",
+    "demoBadge": "Demo",
+    "demoBody": "Requests can be simulated end to end without live banking rails.",
+    "subtitle": "Move between KGS and KGST through one workflow.",
+    "balanceLabel": "Balance",
+    "balanceEquivalent": "Approx. {{amount}} KGS",
+    "demoConfirming": "Confirming...",
+    "tabs": {
+      "deposit": "Deposit",
+      "withdraw": "Withdraw"
+    },
+    "deposit": {
+      "amountLabel": "Deposit amount",
+      "amountPlaceholder": "Enter amount",
+      "feeSummary": "Fee: {{amount}} KGS ({{percent}}%)",
+      "receiveSummary": "You receive: {{amount}} KGST",
+      "paymentMethodLabel": "Payment method",
+      "requestButton": "Request deposit",
+      "resultTitle": "Deposit created",
+      "scanQr": "Scan this QR or use the details below",
+      "qrCodeLabel": "QR payment payload",
+      "demoHint": "In demo mode you can confirm the incoming transfer instantly.",
+      "demoConfirmButton": "Confirm deposit",
+      "newRequestButton": "New deposit"
+    },
+    "withdraw": {
+      "amountLabel": "Withdrawal amount",
+      "amountPlaceholder": "Enter KGST amount",
+      "feeSummary": "Fee: {{amount}} KGST ({{percent}}%)",
+      "receiveSummary": "You receive: {{amount}} KGS",
+      "bankNameLabel": "Bank",
+      "bankAccountLabel": "Bank account",
+      "bankAccountPlaceholder": "Enter bank account number",
+      "requestButton": "Request withdrawal",
+      "resultTitle": "Withdrawal created",
+      "demoHint": "In demo mode you can confirm the payout instantly.",
+      "demoConfirmButton": "Confirm withdrawal",
+      "newRequestButton": "New withdrawal"
+    },
+    "fields": {
+      "transactionId": "Transaction ID",
+      "fee": "Fee",
+      "youReceive": "You receive",
+      "bank": "Bank",
+      "account": "Account",
+      "reference": "Reference",
+      "tokenAmount": "Token amount",
+      "eta": "ETA"
+    },
+    "history": {
+      "title": "Recent activity"
+    },
+    "directions": {
+      "deposit": "Deposit",
+      "withdraw": "Withdrawal",
+      "withdrawal": "Withdrawal"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "completed": "Completed",
+      "expired": "Expired",
+      "cancelled": "Cancelled",
+      "failed": "Failed"
+    },
+    "paymentMethods": {
+      "bank_transfer": {
+        "name": "Bank transfer",
+        "description": "Send fiat from a local bank account."
+      },
+      "mbank_qr": {
+        "name": "MBank QR",
+        "description": "Use QR payment inside the mobile app."
+      },
+      "elsom": {
+        "name": "Elsom",
+        "description": "Pay through the Elsom wallet."
+      },
+      "odengi": {
+        "name": "O!Money",
+        "description": "Pay through the O!Money wallet."
+      }
+    },
+    "toasts": {
+      "depositCreated": "Deposit request created",
+      "depositFailed": "Failed to create deposit request",
+      "depositConfirmed": "Deposit confirmed",
+      "depositConfirmFailed": "Failed to confirm deposit",
+      "withdrawCreated": "Withdrawal request created",
+      "withdrawFailed": "Failed to create withdrawal request",
+      "withdrawConfirmed": "Withdrawal confirmed",
+      "withdrawConfirmFailed": "Failed to confirm withdrawal"
+    }
+  },
+  "createCampaign": {
+    "title": "Create campaign",
+    "formTitle": "Campaign details",
+    "campaignTitle": "Campaign title",
+    "description": "Description",
+    "category": "Category",
+    "fundingGoal": "Funding goal (KGST)",
+    "deadline": "Deadline",
+    "imageUrl": "Campaign image URL",
+    "create": "Create campaign",
+    "success": "Campaign created successfully",
+    "error": "Failed to create campaign",
+    "connectTitle": "Connect to create",
+    "connectBody": "Wallet connection is required before a new campaign contract can be deployed.",
+    "steps": {
+      "details": "Details",
+      "funding": "Funding",
+      "review": "Review"
+    },
+    "detailsTitle": "Campaign details",
+    "detailsBody": "Start with a clear title, solid description, and the right category.",
+    "fields": {
+      "title": "Title",
+      "imageUrl": "Image URL",
+      "goalAmount": "Goal amount",
+      "durationDays": "Duration",
+      "endDate": "End date"
+    },
+    "placeholders": {
+      "title": "Clear, specific, and outcome-oriented campaign title",
+      "description": "Explain the problem, the plan, delivery milestones, and how funds will be used.",
+      "imageUrl": "Paste a hero image URL",
+      "goalAmount": "Enter target amount in KGST"
+    },
+    "titleCount": "{{count}} / 200",
+    "descriptionCount": "{{count}} / 5000",
+    "imageHint": "You can leave this empty to use a placeholder image.",
+    "fundingTitle": "Funding parameters",
+    "fundingBody": "Set a realistic target and duration.",
+    "goalHint": "Set a realistic target that matches your scope and delivery plan.",
+    "durationValue": "{{count}} days",
+    "endsOn": "Campaign ends on {{date}}",
+    "reviewTitle": "Review",
+    "reviewBody": "This summary is what you are about to deploy and save to the backend.",
+    "sections": {
+      "campaignDetails": "Details",
+      "fundingDetails": "Funding",
+      "media": "Media"
+    },
+    "previewAlt": "Campaign preview",
+    "noticeTitle": "On-chain deployment:",
+    "noticeBody": "submitting creates the campaign contract on BSC and then stores the campaign metadata in the backend.",
+    "creating": "Creating...",
+    "toasts": {
+      "creatingOnChain": "Creating campaign on-chain...",
+      "waitingConfirmation": "Waiting for transaction confirmation...",
+      "savingDetails": "Saving campaign details...",
+      "createdSuccess": "Campaign created successfully"
+    },
+    "errors": {
+      "titleRequired": "Title is required",
+      "titleLength": "Title must be between 10 and 200 characters",
+      "descriptionRequired": "Description is required",
+      "descriptionLength": "Description must be at least 50 characters",
+      "categoryRequired": "Select a category",
+      "goalPositive": "Goal must be greater than zero",
+      "goalLimit": "Goal cannot exceed 1,000,000 KGST",
+      "goalTooHigh": "Goal is above the supported limit",
+      "durationRange": "Duration must be between 7 and 90 days",
+      "imageRequired": "An image URL is required",
+      "tooManyPending": "Too many campaigns are still pending review",
+      "blacklisted": "This wallet is blacklisted from creating campaigns",
+      "createFailed": "Failed to create campaign"
+    }
+  },
+  "campaignDetail": {
+    "loading": "Loading campaign...",
+    "notFoundTitle": "Campaign not found",
+    "notFoundBody": "The campaign may have been removed or the link is invalid.",
+    "viewAllCampaigns": "All campaigns",
+    "createdBy": "Created by",
+    "aboutTitle": "About this campaign",
+    "noDescription": "No description provided.",
+    "updatesTitle": "Updates",
+    "contributorsTitle": "{{count}} contributors",
+    "moreContributors": "+{{count}} more contributors",
+    "noContributors": "No contributions yet.",
+    "goalSummary": "Goal {{amount}} KGST",
+    "fundedProgress": "{{percent}}% funded",
+    "backersCount": "{{count}} backers",
+    "contributeButton": "Contribute now",
+    "connectToContribute": "Connect to contribute",
+    "successfulMessage": "This campaign reached its goal.",
+    "founderWithdrawalTitle": "Withdraw funds",
+    "founderWithdrawalBody": "When the campaign meets the on-chain conditions, the founder can release escrowed funds here.",
+    "escrowBalance": "Escrow balance: {{amount}} KGST",
+    "withdrawingButton": "Withdrawing...",
+    "withdrawButton": "Withdraw funds",
+    "viewWithdrawalTx": "View withdrawal transaction",
+    "failedMessage": "This campaign did not reach its goal.",
+    "shareTitle": "Share",
+    "copyLink": "Copy link",
+    "modalTitle": "Support campaign",
+    "modalSubtitle": "Contribute to {{title}}",
+    "amountLabel": "Amount",
+    "amountPlaceholder": "Enter amount in KGST",
+    "modalButton": "Contribute {{amount}} KGST",
+    "withdrawHints": {
+      "connectFounder": "Connect the founder wallet to review withdrawal eligibility.",
+      "onlyFounder": "Only the founder can withdraw escrowed funds.",
+      "goalNotReached": "The funding goal has not been reached yet.",
+      "afterDeadline": "Funds unlock only after the campaign deadline passes.",
+      "alreadyWithdrawn": "Escrow has already been withdrawn.",
+      "stateBlocked": "Withdrawal is blocked while the campaign is in the {{state}} state.",
+      "zeroBalance": "No escrow balance is available to withdraw.",
+      "ready": "Escrow is ready for founder withdrawal.",
+      "notAvailable": "Withdrawal is not available yet.",
+      "balanceUnavailable": "Unable to verify escrow balance right now."
+    },
+    "toasts": {
+      "loadFailed": "Failed to load campaign",
+      "invalidAmount": "Enter a valid amount",
+      "approving": "Approving KGST and preparing contribution...",
+      "transactionPending": "Transaction submitted...",
+      "contributionSuccess": "Contribution submitted successfully",
+      "contributionFailed": "Failed to contribute to campaign",
+      "withdrawSubmitting": "Submitting founder withdrawal...",
+      "withdrawSuccess": "Founder withdrawal completed",
+      "withdrawFailed": "Failed to withdraw funds",
+      "linkCopied": "Campaign link copied"
+    }
+  },
+  "wallet": {
+    "title": "Wallet",
+    "connectBody": "Connect a wallet to review limits, KYC level, and monthly capacity.",
+    "demoBadge": "Demo",
+    "demoBody": "KYC submissions are simulated for faster product testing.",
+    "walletTypes": {
+      "web3auth": "Web3Auth",
+      "metamask": "MetaMask"
+    },
+    "registerTitle": "Register wallet",
+    "registerBody": "Create a wallet profile to unlock limits, KYC, and bridge access.",
+    "registering": "Registering...",
+    "registerButton": "Register",
+    "tierTitle": "Tier",
+    "tierLabel": "Tier {{count}}",
+    "currentBadge": "Current",
+    "monthlyLimit": "Monthly limit",
+    "unlimited": "Unlimited",
+    "monthlyVolume": "Used this month",
+    "remaining": "Remaining",
+    "gasSubsidy": "Gas cover",
+    "none": "None",
+    "kycTitle": "KYC",
+    "levelLabel": "Level {{count}}",
+    "verifiedBadge": "Verified",
+    "verifyNow": "Verify",
+    "completeLevelFirst": "Finish level {{count}} first",
+    "modalTitle": "KYC level {{count}}",
+    "modalDemoBody": "Demo mode skips manual review and approves this step automatically.",
+    "fields": {
+      "phoneNumber": "Phone number",
+      "fullName": "Full name",
+      "documentType": "Document type",
+      "documentId": "Document ID",
+      "dateOfBirth": "Date of birth",
+      "address": "Address",
+      "selfieConfirm": "I confirm a selfie or liveness check has been completed"
+    },
+    "placeholders": {
+      "email": "name@example.com",
+      "phone": "555 123 456",
+      "fullName": "Full legal name",
+      "documentId": "Enter document number",
+      "address": "Enter residential address"
+    },
+    "documentTypes": {
+      "passport": "Passport",
+      "idCard": "ID card",
+      "driversLicense": "Driver's license"
+    },
+    "verifying": "Submitting...",
+    "verifyLevel": "Verify level {{count}}",
+    "toasts": {
+      "registerSuccess": "Wallet registered successfully",
+      "registerFailed": "Failed to register wallet",
+      "kycVerified": "KYC level {{level}} verified",
+      "kycFailed": "Failed to submit KYC verification"
+    },
+    "tiers": {
+      "starter": {
+        "name": "Starter",
+        "limit": "Up to 50,000 KGST per month"
+      },
+      "standard": {
+        "name": "Standard",
+        "limit": "Up to 250,000 KGST per month"
+      },
+      "premium": {
+        "name": "Premium",
+        "limit": "Unlimited volume with the highest support priority"
+      }
+    },
+    "kycLevels": {
+      "none": {
+        "name": "No verification",
+        "description": "Basic read-only access. Transfers and higher limits remain locked."
+      },
+      "basic": {
+        "name": "Basic",
+        "description": "Unlocks entry-level access with email and phone verification."
+      },
+      "enhanced": {
+        "name": "Enhanced",
+        "description": "Adds identity document checks for higher monthly throughput."
+      },
+      "full": {
+        "name": "Full",
+        "description": "Adds address and advanced checks for the highest operational limits."
+      }
+    }
   },
   "admin": {
-    "title": "Admin Panel",
-    "campaigns": "Campaigns",
-    "pending": "Pending Approval",
-    "approved": "Approved",
-    "rejected": "Rejected",
-    "users": "Users",
-    "statistics": "Statistics",
-    "approve": "Approve",
-    "reject": "Reject",
-    "noData": "No data available"
+    "title": "Admin",
+    "subtitle": "Review campaigns, track activity, and manage the blacklist.",
+    "connectTitle": "Connect admin wallet",
+    "connectBody": "Administrative moderation and blacklist controls are only available to approved admin accounts.",
+    "accessDeniedTitle": "Access denied",
+    "accessDeniedBody": "This wallet is connected, but it does not have admin permissions.",
+    "goHome": "Back to home",
+    "tabs": {
+      "overview": "Overview",
+      "moderation": "Moderation",
+      "blacklist": "Blacklist"
+    },
+    "stats": {
+      "totalCampaigns": "Total campaigns",
+      "pendingReview": "Pending review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "totalUsers": "Total users",
+      "contributions": "Contributions",
+      "kgstRaised": "KGST raised",
+      "blacklisted": "Blacklisted"
+    },
+    "emptyModerationTitle": "No campaigns waiting for review",
+    "emptyModerationBody": "The moderation queue is currently clear.",
+    "by": "By {{address}}",
+    "goal": "Goal {{amount}} KGST",
+    "createdOn": "Created {{date}}",
+    "approveButton": "Approve",
+    "rejectButton": "Reject",
+    "blacklistTitle": "Blacklist",
+    "addAddressButton": "Add",
+    "emptyBlacklistTitle": "Blacklist is empty",
+    "emptyBlacklistBody": "No addresses are currently blocked.",
+    "rejectModalTitle": "Reject campaign",
+    "rejectModalBody": "Provide a clear reason so the founder understands what needs to change.",
+    "rejectPlaceholder": "Reason for rejection",
+    "rejectCampaignButton": "Reject campaign",
+    "blacklistModalTitle": "Add address to blacklist",
+    "ethereumAddressLabel": "Ethereum address",
+    "ethereumAddressPlaceholder": "0x...",
+    "blacklistReasonPlaceholder": "Explain why this address is being blocked",
+    "addToBlacklistButton": "Blacklist",
+    "confirmApprove": "Approve this campaign?",
+    "confirmRemoveBlacklist": "Remove this address from the blacklist?",
+    "toasts": {
+      "loadFailed": "Failed to load admin data",
+      "approveSuccess": "Campaign approved",
+      "approveFailed": "Failed to approve campaign",
+      "rejectReasonRequired": "Enter a rejection reason",
+      "rejectSuccess": "Campaign rejected",
+      "rejectFailed": "Failed to reject campaign",
+      "fillAllFields": "Fill in all fields",
+      "invalidAddress": "Enter a valid address",
+      "addBlacklistSuccess": "Address added to blacklist",
+      "addBlacklistFailed": "Failed to add address to blacklist",
+      "removeBlacklistSuccess": "Address removed from blacklist",
+      "removeBlacklistFailed": "Failed to remove address from blacklist"
+    }
+  },
+  "governance": {
+    "notConfiguredTitle": "Governance is not configured yet",
+    "notConfiguredBody": "Governance contract addresses are still missing in the frontend environment. Deploy the DAO stack and set the GOV token, DAO, registry, and deployment block values before using this page.",
+    "heroKicker": "On-chain coordination",
+    "title": "Governance",
+    "heroBody": "Proposals, voting, queueing, and execution happen directly on {{network}}.",
+    "newProposal": "New",
+    "protocolKicker": "Protocol rails",
+    "protocolTitle": "Config",
+    "protocolBody": "Governor, token, and registry contracts are read directly from the deployed governance stack.",
+    "protocolNote": "This interface currently creates on-chain signal proposals. Execution-ready actions can be extended as platform-owned targets become governable.",
+    "walletKicker": "Wallet context",
+    "walletTitle": "Voting profile",
+    "walletConnectBody": "Connect a wallet to view delegation status and submit governance actions.",
+    "delegateSelf": "Self-delegate",
+    "walletNoGov": "This wallet has no GOV yet. It can review proposals, but it cannot propose or vote until GOV is minted and delegated.",
+    "loading": "Loading on-chain governance state...",
+    "filterKicker": "Filter",
+    "empty": "No proposals matched this filter.",
+    "signalTag": "Signal",
+    "by": "By {{address}}",
+    "govCast": "{{amount}} GOV cast",
+    "viewTx": "View tx",
+    "createTitle": "Create proposal",
+    "createHelper": "This form creates a signal proposal directly on the Governor contract. Voting, queueing, and execution all happen on-chain.",
+    "titlePlaceholder": "Reduce campaign review SLA to 24 hours",
+    "descriptionPlaceholder": "Describe the change, why it matters, the intended outcome, and any follow-up implementation notes.",
+    "fieldHelp": "The full description is stored on-chain and is used to derive the queue and execute hash.",
+    "creating": "Creating...",
+    "submitProposal": "Submit proposal",
+    "notEnoughGov": "Not enough GOV",
+    "proposer": "Proposer {{address}}",
+    "proposalId": "Proposal #{{id}}",
+    "snapshotBlock": "Snapshot block",
+    "deadlineBlock": "Deadline block",
+    "queuedEta": "Queued ETA",
+    "notQueued": "Not queued",
+    "viewCreationTx": "Creation tx",
+    "queueProposal": "Queue",
+    "timelockNotReady": "Timelock not ready",
+    "executeProposal": "Execute proposal",
+    "votes": "Votes",
+    "delegationRequired": "Delegate first",
+    "delegationBody": "GOV voting power stays inactive until you delegate it. Self-delegation is required before you can vote.",
+    "castVote": "Vote",
+    "alreadyVoted": "This wallet has already voted on the proposal snapshot.",
+    "voteReasonPlaceholder": "Reason for your vote (optional)",
+    "voteHistory": "Votes",
+    "filters": {
+      "all": "All"
+    },
+    "labels": {
+      "deploymentBlock": "Deployment block",
+      "votingDelay": "Voting delay",
+      "votingPeriod": "Voting period",
+      "quorum": "Quorum",
+      "blocks": "blocks",
+      "dao": "DAO",
+      "gov": "GOV",
+      "registry": "Registry",
+      "govBalance": "GOV balance",
+      "votingPower": "Voting power",
+      "delegate": "Delegate",
+      "proposalThreshold": "Threshold",
+      "tokenHolders": "Holders",
+      "totalProposals": "Proposals",
+      "active": "Active",
+      "actionable": "Actionable",
+      "votesCast": "Votes cast",
+      "proposalType": "Type",
+      "title": "Title"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "active": "Active",
+      "succeeded": "Succeeded",
+      "queued": "Queued",
+      "executed": "Executed",
+      "defeated": "Defeated",
+      "cancelled": "Cancelled",
+      "unknown": "Unknown"
+    },
+    "voteOptions": {
+      "for": "For",
+      "against": "Against",
+      "abstain": "Abstain"
+    },
+    "proposalTypes": {
+      "parameterChange": {
+        "label": "Param change",
+        "description": "Update fees, limits, or other platform settings."
+      },
+      "treasurySpend": {
+        "label": "Treasury",
+        "description": "Allocate treasury-owned funds through governance."
+      },
+      "contractUpgrade": {
+        "label": "Upgrade",
+        "description": "Approve a contract or governance configuration upgrade."
+      },
+      "emergency": {
+        "label": "Emergency",
+        "description": "Coordinate urgent governance action."
+      },
+      "campaignAppeal": {
+        "label": "Appeal",
+        "description": "Escalate or review a moderation decision."
+      }
+    },
+    "proposal": {
+      "unknownTime": "Unknown time"
+    },
+    "toasts": {
+      "loadFailed": "Failed to load on-chain governance data",
+      "loadVotesFailed": "Failed to load vote history",
+      "connectVotingPowerFirst": "Connect a wallet with delegated GOV first",
+      "submittingProposal": "Submitting on-chain proposal...",
+      "proposalSubmitted": "On-chain proposal submitted",
+      "createFailed": "Failed to create proposal",
+      "submittingVote": "Submitting vote on-chain...",
+      "voteRecorded": "Vote recorded on-chain",
+      "voteFailed": "Failed to cast vote",
+      "delegating": "Delegating GOV to self...",
+      "delegationComplete": "Delegation complete",
+      "delegateFailed": "Failed to delegate GOV",
+      "queueing": "Queueing proposal through timelock...",
+      "queued": "Proposal queued",
+      "queueFailed": "Failed to queue proposal",
+      "executing": "Executing queued proposal...",
+      "executed": "Proposal executed on-chain",
+      "executeFailed": "Failed to execute proposal"
+    }
+  },
+  "auth": {
+    "installMetaMask": "Please install MetaMask to continue."
+  },
+  "buttons": {
+    "exploreCampaigns": "Explore Campaigns",
+    "viewDetails": "View details",
+    "contribute": "Contribute",
+    "backup": "Back up seed phrase",
+    "loadMore": "Load more",
+    "loading": "Loading...",
+    "error": "Error"
   },
   "errors": {
     "notFound": "Page not found",
     "unauthorized": "You are not authorized to access this page",
     "serverError": "Server error. Please try again later",
-    "walletNotConnected": "Please connect your wallet first",
+    "walletNotConnected": "Connect your wallet first",
     "invalidAmount": "Invalid amount entered",
     "insufficientBalance": "Insufficient balance"
   },
   "footer": {
-    "copyright": "© 2025 CrowdFund - Decentralized Crowdfunding Platform",
-    "blockchain": "Built on Polygon Amoy Testnet"
+    "copyright": "© 2026 KGST CrowdFund Platform",
+    "blockchain": "Built on BNB Smart Chain Testnet and Polygon Amoy"
   },
   "common": {
     "loading": "Loading...",
@@ -143,6 +731,40 @@
     "no": "No",
     "email": "Email",
     "password": "Password",
-    "language": "Language"
+    "language": "Language",
+    "search": "Search",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}",
+    "goal": "Goal",
+    "continue": "Continue",
+    "back": "Back",
+    "description": "Description",
+    "category": "Category",
+    "amount": "Amount",
+    "type": "Type",
+    "status": "Status",
+    "date": "Date",
+    "address": "Address",
+    "reason": "Reason",
+    "action": "Action",
+    "remove": "Remove",
+    "connectWallet": "Connect Wallet",
+    "connectWalletFirst": "Connect your wallet first",
+    "walletNotConnected": "Wallet is not connected",
+    "transactionRejected": "Transaction was rejected",
+    "processing": "Processing...",
+    "wallet": "Wallet",
+    "notSet": "Not set",
+    "notProvided": "Not provided",
+    "contract": "Contract",
+    "deadline": "Deadline",
+    "noDeadline": "No deadline",
+    "ended": "Ended",
+    "daysLeft": "{{count}} days left",
+    "hoursLeft": "{{count}} hours left",
+    "endingSoon": "Ending soon",
+    "view": "View",
+    "created": "Created"
   }
 }

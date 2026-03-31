@@ -1,0 +1,524 @@
+.governance-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0 var(--spacing-8);
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+.gov-surface,
+.proposal-card,
+.gov-stat,
+.modal {
+  background: linear-gradient(145deg, rgba(28, 28, 32, 0.92) 0%, rgba(18, 18, 22, 0.96) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-lg), var(--shadow-inner);
+}
+
+.gov-hero,
+.gov-panel,
+.gov-filter-bar,
+.proposal-card,
+.gov-empty,
+.gov-warning,
+.gov-stat,
+.proposal-detail,
+.proposal-form {
+  padding: var(--spacing-6);
+}
+
+.gov-kicker,
+.gov-config-label,
+.wallet-stat-label,
+.vote-label,
+.proposal-helper,
+.field-help,
+.gov-stat-label,
+.proposal-meta-time {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.gov-title h1 {
+  margin-top: var(--spacing-3);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  letter-spacing: -0.05em;
+}
+
+.gov-title p,
+.gov-note,
+.proposal-desc,
+.proposal-body,
+.vote-power,
+.vote-reason {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.gov-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--spacing-6);
+}
+
+.gov-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.gov-hero-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(168, 85, 247, 0.24);
+  background: var(--primary-muted);
+  color: var(--primary-light);
+  font-weight: var(--font-semibold);
+}
+
+.gov-overview-grid,
+.gov-metrics,
+.gov-config-grid,
+.proposal-detail-grid,
+.wallet-grid,
+.vote-counts {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.gov-overview-grid,
+.vote-counts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gov-config-grid,
+.proposal-detail-grid,
+.wallet-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gov-panel {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.gov-panel h3 {
+  font-size: var(--text-2xl);
+}
+
+.gov-contract-links {
+  display: grid;
+  gap: var(--spacing-3);
+}
+
+.gov-contract-links a,
+.proposal-meta a,
+.tx-link {
+  color: var(--primary-light);
+  text-decoration: none;
+}
+
+.gov-contract-links a:hover,
+.proposal-meta a:hover,
+.tx-link:hover {
+  text-decoration: underline;
+}
+
+.gov-config-grid > div,
+.detail-card,
+.wallet-stat,
+.vote-count {
+  display: grid;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-2xl);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.wallet-stat.wide {
+  grid-column: 1 / -1;
+}
+
+.gov-config-value,
+.wallet-stat-value,
+.proposal-id {
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.gov-config-value,
+.wallet-stat-value {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+}
+
+.proposal-id,
+.voter {
+  font-family: 'Fira Code', monospace;
+}
+
+.gov-warning {
+  border-color: rgba(253, 224, 71, 0.22);
+  background: linear-gradient(145deg, rgba(44, 38, 18, 0.92) 0%, rgba(24, 20, 10, 0.96) 100%);
+}
+
+.gov-warning h2 {
+  margin-bottom: var(--spacing-3);
+}
+
+.gov-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.gov-stat {
+  display: grid;
+  gap: var(--spacing-2);
+}
+
+.gov-stat-value {
+  font-size: clamp(1.6rem, 2.5vw, 2.4rem);
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+}
+
+.gov-filter-bar {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.gov-filters,
+.proposal-card-tags,
+.proposal-actions,
+.proposal-detail-meta,
+.vote-buttons,
+.vote-entry {
+  display: flex;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  color: var(--text-primary);
+  border-color: rgba(168, 85, 247, 0.22);
+  background: var(--primary-muted);
+}
+
+.proposals-list {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.proposal-card {
+  cursor: pointer;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.proposal-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(168, 85, 247, 0.22);
+}
+
+.proposal-card-header,
+.proposal-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+}
+
+.proposal-status,
+.proposal-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.proposal-tag {
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.status-active {
+  color: var(--success);
+  background: var(--success-muted);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+.status-pending {
+  color: var(--secondary);
+  background: var(--secondary-muted);
+  border: 1px solid rgba(253, 224, 71, 0.22);
+}
+
+.status-executed,
+.status-succeeded {
+  color: #7dd3fc;
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(14, 165, 233, 0.18);
+}
+
+.status-defeated,
+.status-canceled,
+.status-expired {
+  color: var(--error);
+  background: var(--error-muted);
+  border: 1px solid rgba(248, 113, 113, 0.22);
+}
+
+.status-queued {
+  color: var(--primary-light);
+  background: var(--primary-muted);
+  border: 1px solid rgba(168, 85, 247, 0.22);
+}
+
+.proposal-title {
+  margin-top: var(--spacing-4);
+  font-size: var(--text-2xl);
+}
+
+.proposal-desc {
+  margin-top: var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+}
+
+.proposal-meta {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.vote-bar-mini,
+.vote-bar {
+  display: flex;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.vote-bar-mini {
+  height: 0.45rem;
+}
+
+.vote-bar {
+  height: 0.75rem;
+}
+
+.vote-for {
+  background: var(--success);
+}
+
+.vote-against {
+  background: var(--error);
+}
+
+.vote-abstain-bar {
+  background: var(--primary-light);
+}
+
+.gov-empty {
+  min-height: 12rem;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  padding: var(--spacing-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+}
+
+.modal {
+  width: min(100%, 720px);
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.modal-lg {
+  width: min(100%, 840px);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-5) var(--spacing-6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.close-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.proposal-form,
+.proposal-detail,
+.cast-vote,
+.vote-history {
+  display: grid;
+  gap: var(--spacing-4);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-2);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.field-help {
+  display: block;
+  margin-top: var(--spacing-2);
+}
+
+.proposal-detail-meta {
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.proposal-body,
+.cast-vote {
+  padding: var(--spacing-5);
+  border-radius: var(--radius-2xl);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vote-count {
+  text-align: left;
+}
+
+.vote-count.for .vote-value {
+  color: var(--success);
+}
+
+.vote-count.against .vote-value {
+  color: var(--error);
+}
+
+.vote-count.abstain .vote-value {
+  color: var(--primary-light);
+}
+
+.vote-value {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.btn-vote-for,
+.btn-vote-against,
+.btn-vote-abstain {
+  flex: 1;
+}
+
+.btn-vote-for {
+  background: var(--success-muted);
+  color: var(--success);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+.btn-vote-against {
+  background: var(--error-muted);
+  color: var(--error);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+.btn-vote-abstain {
+  background: var(--primary-muted);
+  color: var(--primary-light);
+  border: 1px solid rgba(168, 85, 247, 0.22);
+}
+
+.vote-history {
+  padding-top: var(--spacing-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.vote-entry {
+  align-items: center;
+  padding: var(--spacing-3) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+}
+
+.vote-support {
+  font-weight: var(--font-bold);
+}
+
+.support-1 {
+  color: var(--success);
+}
+
+.support-0 {
+  color: var(--error);
+}
+
+.support-2 {
+  color: var(--primary-light);
+}
+
+@media (max-width: 960px) {
+  .gov-hero,
+  .gov-hero-actions,
+  .proposal-card-header,
+  .proposal-meta,
+  .proposal-actions,
+  .proposal-detail-meta,
+  .vote-buttons,
+  .vote-entry {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gov-overview-grid,
+  .gov-metrics,
+  .gov-config-grid,
+  .proposal-detail-grid,
+  .wallet-grid,
+  .vote-counts {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,11 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { userAPI, contributionAPI } from '../services/api';
+import { explorerAddressUrl, explorerTxUrl } from '../contracts';
 import './Dashboard.css';
 
+function normalizeModerationStatus(status) {
+  const normalized = String(status || 'pending').trim().toLowerCase();
+
+  if (normalized === 'approved') return 'approved';
+  if (normalized === 'rejected') return 'rejected';
+  return 'pending';
+}
+
 export default function Dashboard() {
+  const { t, i18n } = useTranslation();
   const { user, isConnected, connect } = useAuth();
   const [activeTab, setActiveTab] = useState('campaigns');
   const [myCampaigns, setMyCampaigns] = useState([]);
@@ -17,6 +28,8 @@ export default function Dashboard() {
     totalRaised: '0',
     contributionsCount: 0
   });
+
+  const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
 
   useEffect(() => {
     if (isConnected && user?.address) {
@@ -65,7 +78,10 @@ export default function Dashboard() {
   const formatAmount = (wei) => {
     if (!wei || wei === '0') return '0';
     try {
-      return parseFloat(ethers.formatEther(wei)).toFixed(4);
+      return Number.parseFloat(ethers.formatEther(wei)).toLocaleString(locale, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 4,
+      });
     } catch {
       return '0';
     }
@@ -77,9 +93,18 @@ export default function Dashboard() {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return 'N/A';
-    return new Date(dateStr).toLocaleDateString();
+    if (!dateStr) return t('common.notSet');
+    return new Date(dateStr).toLocaleDateString(locale);
   };
+
+  const formatSummaryAmount = (value, maximumFractionDigits = 2) => {
+    return (Number.parseFloat(value || '0') || 0).toLocaleString(locale, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits,
+    });
+  };
+
+  const getModerationStatusLabel = (status) => t(`moderationStatuses.${normalizeModerationStatus(status)}`);
 
   const calculateProgress = (raised, goal) => {
     if (!raised || !goal || goal === '0') return 0;
@@ -94,14 +119,13 @@ export default function Dashboard() {
 
   if (!isConnected) {
     return (
-      <div className="dashboard">
+      <div className="dashboard-page">
         <div className="container">
-          <div className="connect-prompt">
-            <div className="prompt-icon">👤</div>
-            <h2>Your Dashboard</h2>
-            <p>Connect your wallet to view your campaigns and contributions</p>
+          <div className="dashboard-empty dashboard-surface">
+            <h2>{t('dashboard.connectTitle')}</h2>
+            <p>{t('dashboard.connectBody')}</p>
             <button className="btn btn-primary btn-lg" onClick={connect}>
-              Connect Wallet
+              {t('common.connectWallet')}
             </button>
           </div>
         </div>
@@ -110,200 +134,205 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard">
+    <div className="dashboard-page">
       <div className="container">
-        {/* Header */}
-        <div className="dashboard-header">
-          <div className="user-profile">
-            <div className="avatar">
+        <section className="dashboard-hero dashboard-surface">
+          <div className="dashboard-hero-copy">
+            <span className="dashboard-kicker">{t('dashboard.heroKicker')}</span>
+            <h1>{t('dashboard.title')}</h1>
+            <p>{t('dashboard.heroBody')}</p>
+          </div>
+
+          <div className="dashboard-identity">
+            <div className="dashboard-avatar">
               {user?.address?.slice(2, 4).toUpperCase()}
             </div>
-            <div className="user-details">
-              <h1>My Dashboard</h1>
-              <p className="address">{user?.address}</p>
+            <div>
+              <span className="dashboard-kicker">{t('common.wallet')}</span>
+              <strong>{formatAddress(user?.address)}</strong>
             </div>
           </div>
+
           <Link to="/create" className="btn btn-primary">
-            Create Campaign
+            {t('nav.createCampaign')}
           </Link>
-        </div>
+        </section>
 
-        {/* Stats Cards */}
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon">📊</div>
-            <div className="stat-content">
-              <div className="stat-value">{stats.totalCampaigns}</div>
-              <div className="stat-label">My Campaigns</div>
-            </div>
+        <section className="dashboard-metrics">
+          <div className="dashboard-metric dashboard-surface">
+            <span className="dashboard-kicker">{t('dashboard.metrics.launchedLabel')}</span>
+            <strong>{stats.totalCampaigns}</strong>
+            <p>{t('dashboard.metrics.launchedNote')}</p>
           </div>
-          <div className="stat-card">
-            <div className="stat-icon">💰</div>
-            <div className="stat-content">
-              <div className="stat-value">{parseFloat(stats.totalRaised).toFixed(2)}</div>
-              <div className="stat-label">POL Raised</div>
-            </div>
+          <div className="dashboard-metric dashboard-surface">
+            <span className="dashboard-kicker">{t('dashboard.metrics.raisedLabel')}</span>
+            <strong>{formatSummaryAmount(stats.totalRaised)} KGST</strong>
+            <p>{t('dashboard.metrics.raisedNote')}</p>
           </div>
-          <div className="stat-card">
-            <div className="stat-icon">🎁</div>
-            <div className="stat-content">
-              <div className="stat-value">{stats.contributionsCount}</div>
-              <div className="stat-label">Contributions Made</div>
-            </div>
+          <div className="dashboard-metric dashboard-surface">
+            <span className="dashboard-kicker">{t('dashboard.metrics.backedLabel')}</span>
+            <strong>{formatSummaryAmount(stats.totalContributed)} KGST</strong>
+            <p>{t('dashboard.metrics.backedNote', { count: stats.contributionsCount })}</p>
           </div>
-          <div className="stat-card">
-            <div className="stat-icon">💎</div>
-            <div className="stat-content">
-              <div className="stat-value">{parseFloat(stats.totalContributed).toFixed(2)}</div>
-              <div className="stat-label">POL Contributed</div>
-            </div>
-          </div>
-        </div>
+        </section>
 
-        {/* Tabs */}
-        <div className="tabs">
+        <div className="dashboard-tabs dashboard-surface">
           <button
-            className={`tab ${activeTab === 'campaigns' ? 'active' : ''}`}
+            className={`dashboard-tab ${activeTab === 'campaigns' ? 'active' : ''}`}
             onClick={() => setActiveTab('campaigns')}
           >
-            My Campaigns ({myCampaigns.length})
+            {t('dashboard.tabs.campaigns', { count: myCampaigns.length })}
           </button>
           <button
-            className={`tab ${activeTab === 'contributions' ? 'active' : ''}`}
+            className={`dashboard-tab ${activeTab === 'contributions' ? 'active' : ''}`}
             onClick={() => setActiveTab('contributions')}
           >
-            My Contributions ({myContributions.length})
+            {t('dashboard.tabs.contributions', { count: myContributions.length })}
           </button>
         </div>
 
-        {/* Tab Content */}
         {loading ? (
-          <div className="loading-state">
+          <div className="dashboard-empty dashboard-surface">
             <div className="spinner"></div>
-            <p>Loading...</p>
+            <p>{t('common.loading')}</p>
           </div>
         ) : (
-          <div className="tab-content">
+          <div className="dashboard-content">
             {activeTab === 'campaigns' && (
-              <div className="campaigns-section">
+              <div className="dashboard-card-grid">
                 {myCampaigns.length === 0 ? (
-                  <div className="empty-state">
-                    <div className="empty-icon">🚀</div>
-                    <h3>No campaigns yet</h3>
-                    <p>Create your first campaign and start raising funds!</p>
+                  <div className="dashboard-empty dashboard-surface">
+                    <h3>{t('dashboard.emptyCampaignsTitle')}</h3>
+                    <p>{t('dashboard.emptyCampaignsBody')}</p>
                     <Link to="/create" className="btn btn-primary">
-                      Create Campaign
+                      {t('nav.createCampaign')}
                     </Link>
                   </div>
                 ) : (
-                  <div className="campaigns-list">
-                    {myCampaigns.map(campaign => (
-                      <div key={campaign.id} className="campaign-item">
-                        <div className="campaign-image">
-                          {campaign.image_url ? (
-                            <img src={campaign.image_url} alt={campaign.title} />
-                          ) : (
-                            <div className="campaign-placeholder">🎯</div>
-                          )}
+                  myCampaigns.map((campaign) => {
+                    const progress = calculateProgress(campaign.total_raised, campaign.goal_amount);
+
+                    return (
+                      <article key={campaign.id} className="dashboard-item-card dashboard-campaign-card dashboard-surface">
+                        <div className="dashboard-card-topbar">
+                          <span className="dashboard-kicker">{t('dashboard.campaignKicker')}</span>
+                          <span className={`dashboard-status status-${normalizeModerationStatus(campaign.moderation_status)}`}>
+                            {getModerationStatusLabel(campaign.moderation_status)}
+                          </span>
                         </div>
-                        <div className="campaign-info">
-                          <div className="campaign-header">
-                            <h3>{campaign.title}</h3>
-                            <span className={`status-badge status-${campaign.moderation_status?.toLowerCase()}`}>
-                              {campaign.moderation_status || 'Pending'}
-                            </span>
-                          </div>
-                          <div className="campaign-progress">
-                            <div className="progress-bar">
-                              <div 
-                                className="progress-fill"
-                                style={{ width: `${calculateProgress(campaign.total_raised, campaign.goal_amount)}%` }}
-                              />
-                            </div>
-                            <div className="progress-stats">
-                              <span>{formatAmount(campaign.total_raised)} / {formatAmount(campaign.goal_amount)} POL</span>
-                              <span>{calculateProgress(campaign.total_raised, campaign.goal_amount)}%</span>
-                            </div>
-                          </div>
-                          <div className="campaign-meta">
-                            <span>Created: {formatDate(campaign.created_at)}</span>
-                            <span>{campaign.contributor_count || 0} backers</span>
+
+                        <h3 className="dashboard-card-title">{campaign.title}</h3>
+
+                        <div className="dashboard-item-media">
+                          <div className="campaign-image">
+                            {campaign.image_url ? (
+                              <img src={campaign.image_url} alt={campaign.title} />
+                            ) : (
+                              <div className="campaign-placeholder">🎯</div>
+                            )}
                           </div>
                         </div>
-                        <div className="campaign-actions">
-                          <Link 
-                            to={`/campaign/${campaign.id}`} 
-                            className="btn btn-sm btn-outline"
-                          >
-                            View
+
+                        <div className="dashboard-progress-block">
+                          <div className="dashboard-progress-head">
+                            <span className="dashboard-field-label">{t('dashboard.fields.progress')}</span>
+                            <strong className="dashboard-progress-value">{progress}%</strong>
+                          </div>
+                          <div className="progress-track">
+                            <div
+                              className="progress-fill"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                          <div className="dashboard-progress-meta">
+                            <span>{formatAmount(campaign.total_raised)} / {formatAmount(campaign.goal_amount)} KGST</span>
+                            <span>{t('dashboard.fields.raised')}</span>
+                          </div>
+                        </div>
+
+                        <div className="dashboard-item-stat-grid">
+                          <div className="dashboard-item-stat">
+                            <span className="dashboard-field-label">{t('dashboard.fields.raised')}</span>
+                            <strong>{formatAmount(campaign.total_raised)} KGST</strong>
+                          </div>
+                          <div className="dashboard-item-stat">
+                            <span className="dashboard-field-label">{t('dashboard.fields.goal')}</span>
+                            <strong>{formatAmount(campaign.goal_amount)} KGST</strong>
+                          </div>
+                          <div className="dashboard-item-stat">
+                            <span className="dashboard-field-label">{t('dashboard.fields.created')}</span>
+                            <strong>{formatDate(campaign.created_at)}</strong>
+                          </div>
+                          <div className="dashboard-item-stat">
+                            <span className="dashboard-field-label">{t('dashboard.fields.backers')}</span>
+                            <strong>{Number(campaign.contributor_count || 0).toLocaleString(locale)}</strong>
+                          </div>
+                        </div>
+
+                        <div className="dashboard-item-actions">
+                          <Link to={`/campaign/${campaign.id}`} className="btn btn-outline btn-sm">
+                            {t('common.view')}
                           </Link>
                           {campaign.contract_address && (
                             <a
-                              href={`https://amoy.polygonscan.com/address/${campaign.contract_address}`}
+                              href={explorerAddressUrl(campaign.contract_address)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="btn btn-sm btn-outline"
+                              className="btn btn-outline btn-sm"
                             >
-                              Contract
+                              {t('common.contract')}
                             </a>
                           )}
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      </article>
+                    );
+                  })
                 )}
               </div>
             )}
 
             {activeTab === 'contributions' && (
-              <div className="contributions-section">
+              <div className="dashboard-card-grid">
                 {myContributions.length === 0 ? (
-                  <div className="empty-state">
-                    <div className="empty-icon">💝</div>
-                    <h3>No contributions yet</h3>
-                    <p>Support campaigns you believe in!</p>
+                  <div className="dashboard-empty dashboard-surface">
+                    <h3>{t('dashboard.emptyContributionsTitle')}</h3>
+                    <p>{t('dashboard.emptyContributionsBody')}</p>
                     <Link to="/campaigns" className="btn btn-primary">
-                      Explore Campaigns
+                      {t('hero.exploreCampaigns')}
                     </Link>
                   </div>
                 ) : (
-                  <div className="contributions-table">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Campaign</th>
-                          <th>Amount</th>
-                          <th>Date</th>
-                          <th>Transaction</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {myContributions.map((contrib, index) => (
-                          <tr key={index}>
-                            <td>
-                              <Link to={`/campaign/${contrib.campaign_id}`}>
-                                {contrib.campaign_title || `Campaign #${contrib.campaign_id}`}
-                              </Link>
-                            </td>
-                            <td className="amount">{formatAmount(contrib.amount)} POL</td>
-                            <td>{formatDate(contrib.created_at)}</td>
-                            <td>
-                              {contrib.transaction_hash && (
-                                <a
-                                  href={`https://amoy.polygonscan.com/tx/${contrib.transaction_hash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="tx-link"
-                                >
-                                  {formatAddress(contrib.transaction_hash)}
-                                </a>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  myContributions.map((contrib, index) => (
+                    <article key={`${contrib.transaction_hash || contrib.campaign_id}-${index}`} className="dashboard-item-card dashboard-contribution-card dashboard-surface">
+                      <div className="dashboard-item-header">
+                        <div>
+                          <span className="dashboard-kicker">{t('dashboard.contributionKicker')}</span>
+                          <h3>{contrib.campaign_title || t('dashboard.campaignFallback', { id: contrib.campaign_id })}</h3>
+                        </div>
+                        <strong className="dashboard-amount">{formatAmount(contrib.amount)} KGST</strong>
+                      </div>
+
+                      <div className="dashboard-contribution-meta">
+                        <span>{formatDate(contrib.created_at)}</span>
+                        {contrib.transaction_hash && (
+                          <a
+                            href={explorerTxUrl(contrib.transaction_hash)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="dashboard-transaction-link"
+                          >
+                            {formatAddress(contrib.transaction_hash)}
+                          </a>
+                        )}
+                      </div>
+
+                      <div className="dashboard-item-actions">
+                        <Link to={`/campaign/${contrib.campaign_id}`} className="btn btn-outline btn-sm">
+                          {t('dashboard.viewCampaign')}
+                        </Link>
+                      </div>
+                    </article>
+                  ))
                 )}
               </div>
             )}

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["node"]
+  },
+  "include": [
+    "hardhat.config.js",
+    "scripts/**/*.js",
+    "test/**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "artifacts",
+    "cache",
+    "deployments"
+  ]
+}

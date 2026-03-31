@@ -1,9 +1,10 @@
-# Start the Crowdfunding Platform
+# Start the Crowdfunding Platform (BSC + Polygon Multi-Chain)
 # Run this script from the project root directory
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  CrowdFund - Startup Script" -ForegroundColor Cyan
+Write-Host "  CrowdFund KG - Startup Script" -ForegroundColor Cyan
+Write-Host "  BSC Testnet + Polygon Amoy" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -72,6 +73,14 @@ Write-Host ""
 Write-Host "  Frontend: " -NoNewline; Write-Host "http://localhost:3000" -ForegroundColor Green
 Write-Host "  Backend:  " -NoNewline; Write-Host "http://localhost:8080" -ForegroundColor Green
 Write-Host "  Admin:    " -NoNewline; Write-Host "http://localhost:3000/admin" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "  Chains:" -ForegroundColor Cyan
+Write-Host "    Campaigns (KGST): BSC Testnet (ChainID 97)"
+Write-Host "    Governance:       Polygon Amoy (ChainID 80002)"
+Write-Host ""
+Write-Host "  Contracts (BSC Testnet):" -ForegroundColor Cyan
+Write-Host "    MockKGST:        0x1523a1328E35782eBe096B1d12BBd9d302f3406C"
+Write-Host "    CampaignFactory: 0xf867D4B0768558B58Da7e87b73BE3b341adC2053"
 Write-Host ""
 Write-Host "  To access admin:" -ForegroundColor Yellow
 Write-Host "  1. Add your wallet to ADMIN_ADDRESSES in backend\.env"

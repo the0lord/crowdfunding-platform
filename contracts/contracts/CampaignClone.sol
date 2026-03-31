@@ -5,6 +5,8 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * @title Campaign (Clone Implementation)
@@ -12,6 +14,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
  * @dev Uses initializer instead of constructor for clone compatibility
  */
 contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
+    using SafeERC20 for IERC20;
     
     // Campaign states
     enum CampaignState {
@@ -37,6 +40,7 @@ contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeab
     string public description;
     string public imageURI;
     address public platformWallet;
+    IERC20 public paymentToken; // KGST token
     
     // Campaign state
     CampaignState public state;
@@ -52,8 +56,9 @@ contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeab
     RewardTier[] public rewardTiers;
     mapping(address => uint256[]) public contributorRewardTiers;
     
-    // Constants
-    uint256 public constant PLATFORM_FEE_PERCENT = 2;
+    // Constants – platform takes 1.5% (150 basis points) of successful withdrawals
+    uint256 public constant PLATFORM_FEE_BPS = 150;
+    uint256 public constant BPS_DENOMINATOR = 10000;
     
     // Events
     event ContributionReceived(address indexed contributor, uint256 amount, uint256 newTotal, uint256 timestamp);
@@ -79,13 +84,15 @@ contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeab
         string memory _title,
         string memory _description,
         string memory _imageURI,
-        address _platformWallet
+        address _platformWallet,
+        address _paymentToken
     ) external initializer {
         require(_founder != address(0), "Invalid founder address");
         require(_goalAmount > 0, "Goal must be greater than 0");
         require(_deadline > block.timestamp, "Deadline must be in future");
         require(bytes(_title).length > 0, "Title cannot be empty");
         require(_platformWallet != address(0), "Invalid platform wallet");
+        require(_paymentToken != address(0), "Invalid payment token");
         
         __Ownable_init(_founder);
         __ReentrancyGuard_init();
@@ -98,6 +105,7 @@ contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeab
         description = _description;
         imageURI = _imageURI;
         platformWallet = _platformWallet;
+        paymentToken = IERC20(_paymentToken);
         state = CampaignState.Active;
     }
     
@@ -128,12 +136,16 @@ contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeab
     }
     
     /**
-     * @notice Contribute to the campaign
+     * @notice Contribute KGST tokens to the campaign
+     * @param amount Amount of KGST to contribute (caller must approve first)
      */
-    function contribute() external payable nonReentrant whenNotPaused {
+    function contribute(uint256 amount) external nonReentrant whenNotPaused {
         require(state == CampaignState.Active, "Campaign not active");
         require(block.timestamp < deadline, "Campaign has ended");
-        require(msg.value > 0, "Contribution must be > 0");
+        require(amount > 0, "Contribution must be > 0");
+        
+        // Transfer KGST from contributor to this contract
+        paymentToken.safeTransferFrom(msg.sender, address(this), amount);
         
         // Track contributor
         if (!hasContributed[msg.sender]) {
@@ -142,12 +154,12 @@ contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeab
             contributorCount++;
         }
         
-        contributions[msg.sender] += msg.value;
-        totalRaised += msg.value;
+        contributions[msg.sender] += amount;
+        totalRaised += amount;
         
         _assignRewardTiers(msg.sender);
         
-        emit ContributionReceived(msg.sender, msg.value, totalRaised, block.timestamp);
+        emit ContributionReceived(msg.sender, amount, totalRaised, block.timestamp);
     }
     
     /**
@@ -160,20 +172,18 @@ contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeab
         
         state = CampaignState.Successful;
         
-        uint256 amount = address(this).balance;
+        uint256 amount = paymentToken.balanceOf(address(this));
         require(amount > 0, "No funds to withdraw");
         
-        // Calculate platform fee
-        uint256 platformFee = (amount * PLATFORM_FEE_PERCENT) / 100;
+        // Calculate platform fee (1.5%)
+        uint256 platformFee = (amount * PLATFORM_FEE_BPS) / BPS_DENOMINATOR;
         uint256 founderAmount = amount - platformFee;
         
-        // Transfer platform fee
-        (bool platformSuccess, ) = platformWallet.call{value: platformFee}("");
-        require(platformSuccess, "Platform transfer failed");
+        // Transfer platform fee in KGST
+        paymentToken.safeTransfer(platformWallet, platformFee);
         
-        // Transfer to founder
-        (bool founderSuccess, ) = founder.call{value: founderAmount}("");
-        require(founderSuccess, "Founder transfer failed");
+        // Transfer to founder in KGST
+        paymentToken.safeTransfer(founder, founderAmount);
         
         emit FundsWithdrawn(founder, founderAmount, platformFee, block.timestamp);
     }
@@ -197,9 +207,8 @@ contract Campaign is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeab
         uint256 amount = contributions[msg.sender];
         contributions[msg.sender] = 0;
         
-        // Transfer refund
-        (bool success, ) = msg.sender.call{value: amount}("");
-        require(success, "Refund transfer failed");
+        // Transfer KGST refund
+        paymentToken.safeTransfer(msg.sender, amount);
         
         emit RefundIssued(msg.sender, amount, block.timestamp);
     }

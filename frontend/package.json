@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@web3auth/modal": "^10.14.1",
     "ethers": "^6.9.0",
     "i18next": "^25.8.1",
     "react": "^18.2.0",
@@ -21,6 +22,7 @@
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vite-plugin-node-polyfills": "^0.25.0"
   }
 }

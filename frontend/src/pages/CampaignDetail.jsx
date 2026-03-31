@@ -1,38 +1,54 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ethers } from 'ethers';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { campaignAPI, contributionAPI } from '../services/api';
+import {
+  approveAndContribute,
+  ensureBSCChain,
+  explorerAddressUrl,
+  explorerTxUrl,
+  getCampaignWithdrawalStatus,
+  withdrawCampaignFunds,
+} from '../contracts';
 import toast from 'react-hot-toast';
 import './CampaignDetail.css';
 
-const CAMPAIGN_ABI = [
-  "function contribute() external payable",
-  "function withdraw() external",
-  "function refund() external",
-  "function goalAmount() external view returns (uint256)",
-  "function deadline() external view returns (uint256)",
-  "function totalRaised() external view returns (uint256)",
-  "function state() external view returns (uint8)",
-  "function founder() external view returns (address)",
-  "function contributorCount() external view returns (uint256)",
-  "function contributions(address) external view returns (uint256)",
-  "function getCurrentState() external view returns (uint8)"
-];
+function normalizeCampaignState(state) {
+  const normalized = String(state || 'Active').trim().toLowerCase();
+
+  if (normalized === 'successful' || normalized === 'funded') return 'successful';
+  if (normalized === 'failed') return 'failed';
+  if (normalized === 'cancelled' || normalized === 'canceled') return 'cancelled';
+  return 'active';
+}
 
 export default function CampaignDetail() {
   const { id } = useParams();
-  const { user, isConnected, connect } = useAuth();
+  const { t, i18n } = useTranslation();
+  const { user, isConnected, connect, provider } = useAuth();
   const [campaign, setCampaign] = useState(null);
   const [contributions, setContributions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [contributing, setContributing] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
+  const [canWithdraw, setCanWithdraw] = useState(false);
+  const [withdrawHint, setWithdrawHint] = useState({ key: 'campaignDetail.withdrawHints.connectFounder', params: {} });
+  const [escrowBalance, setEscrowBalance] = useState('0');
+  const [withdrawTxHash, setWithdrawTxHash] = useState('');
   const [amount, setAmount] = useState('');
   const [showModal, setShowModal] = useState(false);
+
+  const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
 
   useEffect(() => {
     loadCampaign();
   }, [id]);
+
+  useEffect(() => {
+    checkWithdrawAvailability();
+  }, [campaign, user?.address]);
 
   const loadCampaign = async () => {
     try {
@@ -44,9 +60,41 @@ export default function CampaignDetail() {
       setContributions(contribs.contributions || []);
     } catch (error) {
       console.error('Error loading campaign:', error);
-      toast.error('Failed to load campaign');
+      toast.error(t('campaignDetail.toasts.loadFailed'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkWithdrawAvailability = async () => {
+    if (!campaign?.contract_address || !campaign?.founder_address || !user?.address) {
+      setCanWithdraw(false);
+      setEscrowBalance('0');
+      setWithdrawHint({ key: 'campaignDetail.withdrawHints.connectFounder', params: {} });
+      return;
+    }
+
+    const isFounder = user.address.toLowerCase() === campaign.founder_address.toLowerCase();
+    if (!isFounder) {
+      setCanWithdraw(false);
+      setEscrowBalance('0');
+      setWithdrawHint({ key: 'campaignDetail.withdrawHints.onlyFounder', params: {} });
+      return;
+    }
+
+    try {
+      const status = await getCampaignWithdrawalStatus(campaign.contract_address, user.address);
+      setCanWithdraw(status.canWithdraw);
+      setEscrowBalance(status.paymentBalance);
+      setWithdrawHint({
+        key: status.reasonKey || 'campaignDetail.withdrawHints.notAvailable',
+        params: status.reasonParams || {},
+      });
+    } catch (error) {
+      console.error('Failed to check campaign withdrawal status:', error);
+      setCanWithdraw(false);
+      setEscrowBalance('0');
+      setWithdrawHint({ key: 'campaignDetail.withdrawHints.balanceUnavailable', params: {} });
     }
   };
 
@@ -58,28 +106,26 @@ export default function CampaignDetail() {
     }
 
     if (!amount || parseFloat(amount) <= 0) {
-      toast.error('Please enter a valid amount');
+      toast.error(t('campaignDetail.toasts.invalidAmount'));
       return;
     }
 
     setContributing(true);
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      
-      const contract = new ethers.Contract(
-        campaign.contract_address,
-        CAMPAIGN_ABI,
-        signer
-      );
+      if (!provider) {
+        toast.error(t('common.walletNotConnected'));
+        return;
+      }
 
-      const tx = await contract.contribute({
-        value: ethers.parseEther(amount)
-      });
+      // Ensure on BSC chain
+      await ensureBSCChain(provider);
 
-      toast.loading('Transaction pending...', { id: 'tx' });
-      await tx.wait();
-      toast.success('Contribution successful!', { id: 'tx' });
+      // Approve KGST + contribute in one flow
+      toast.loading(t('campaignDetail.toasts.approving'), { id: 'tx' });
+      const { tx } = await approveAndContribute(provider, campaign.contract_address, amount);
+
+      toast.loading(t('campaignDetail.toasts.transactionPending'), { id: 'tx' });
+      toast.success(t('campaignDetail.toasts.contributionSuccess'), { id: 'tx' });
 
       // Record in backend
       await contributionAPI.create({
@@ -94,16 +140,53 @@ export default function CampaignDetail() {
       loadCampaign();
     } catch (error) {
       console.error('Contribution error:', error);
-      toast.error(error.reason || 'Contribution failed', { id: 'tx' });
+      toast.error(
+        error.code === 'ACTION_REJECTED' || error.code === 4001
+          ? t('common.transactionRejected')
+          : t('campaignDetail.toasts.contributionFailed'),
+        { id: 'tx' }
+      );
     } finally {
       setContributing(false);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    if (!provider) {
+      toast.error(t('common.walletNotConnected'));
+      return;
+    }
+
+    setWithdrawing(true);
+    try {
+      toast.loading(t('campaignDetail.toasts.withdrawSubmitting'), { id: 'withdraw' });
+      const { tx } = await withdrawCampaignFunds(provider, campaign.contract_address);
+      setWithdrawTxHash(tx.hash);
+      setCanWithdraw(false);
+      setEscrowBalance('0');
+      setWithdrawHint({ key: 'campaignDetail.withdrawHints.alreadyWithdrawn', params: {} });
+      toast.success(t('campaignDetail.toasts.withdrawSuccess'), { id: 'withdraw' });
+      await loadCampaign();
+    } catch (error) {
+      console.error('Withdraw error:', error);
+      toast.error(
+        error.code === 'ACTION_REJECTED' || error.code === 4001
+          ? t('common.transactionRejected')
+          : t('campaignDetail.toasts.withdrawFailed'),
+        { id: 'withdraw' }
+      );
+    } finally {
+      setWithdrawing(false);
     }
   };
 
   const formatAmount = (wei) => {
     if (!wei || wei === '0') return '0';
     try {
-      return parseFloat(ethers.formatEther(wei)).toFixed(4);
+      return Number.parseFloat(ethers.formatEther(wei)).toLocaleString(locale, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 4,
+      });
     } catch {
       return '0';
     }
@@ -126,26 +209,36 @@ export default function CampaignDetail() {
   };
 
   const getTimeRemaining = () => {
-    if (!campaign?.deadline) return 'No deadline';
+    if (!campaign?.deadline) return t('common.noDeadline');
     const deadline = new Date(campaign.deadline);
     const now = new Date();
     const diff = deadline - now;
     
-    if (diff <= 0) return 'Ended';
+    if (diff <= 0) return t('common.ended');
     
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     
-    if (days > 0) return `${days} days left`;
-    if (hours > 0) return `${hours} hours left`;
-    return 'Ending soon';
+    if (days > 0) return t('common.daysLeft', { count: days });
+    if (hours > 0) return t('common.hoursLeft', { count: hours });
+    return t('common.endingSoon');
   };
+
+  const getStateLabel = (state) => t(`campaignStates.${normalizeCampaignState(state)}`);
+
+  const isFounder = !!user?.address && !!campaign?.founder_address && user.address.toLowerCase() === campaign.founder_address.toLowerCase();
+  const withdrawHintParams = withdrawHint.key === 'campaignDetail.withdrawHints.stateBlocked'
+    ? {
+        ...withdrawHint.params,
+        state: t(`campaignStates.${withdrawHint.params.state}`, { defaultValue: withdrawHint.params.state }),
+      }
+    : withdrawHint.params;
 
   if (loading) {
     return (
       <div className="campaign-detail loading">
         <div className="spinner"></div>
-        <p>Loading campaign...</p>
+        <p>{t('campaignDetail.loading')}</p>
       </div>
     );
   }
@@ -153,10 +246,10 @@ export default function CampaignDetail() {
   if (!campaign) {
     return (
       <div className="campaign-detail not-found">
-        <h2>Campaign Not Found</h2>
-        <p>The campaign you're looking for doesn't exist.</p>
+        <h2>{t('campaignDetail.notFoundTitle')}</h2>
+        <p>{t('campaignDetail.notFoundBody')}</p>
         <Link to="/campaigns" className="btn btn-primary">
-          View All Campaigns
+          {t('campaignDetail.viewAllCampaigns')}
         </Link>
       </div>
     );
@@ -179,13 +272,13 @@ export default function CampaignDetail() {
           <div className="campaign-info">
             <div className="campaign-badges">
               <span className={`state-badge state-${campaign.state?.toLowerCase()}`}>
-                {campaign.state || 'Active'}
+                {getStateLabel(campaign.state)}
               </span>
               <span className="time-badge">{getTimeRemaining()}</span>
             </div>
             <h1 className="campaign-title">{campaign.title}</h1>
             <p className="campaign-creator">
-              Created by <span>{formatAddress(campaign.founder_address)}</span>
+              {t('campaignDetail.createdBy')} <span>{formatAddress(campaign.founder_address)}</span>
             </p>
           </div>
         </div>
@@ -195,21 +288,21 @@ export default function CampaignDetail() {
           {/* Left Column - Description */}
           <div className="campaign-left">
             <div className="section">
-              <h2>About this Campaign</h2>
+              <h2>{t('campaignDetail.aboutTitle')}</h2>
               <div className="description">
-                {campaign.description || 'No description provided.'}
+                {campaign.description || t('campaignDetail.noDescription')}
               </div>
             </div>
 
             {/* Updates Section */}
             {campaign.updates && campaign.updates.length > 0 && (
               <div className="section">
-                <h2>Updates</h2>
+                <h2>{t('campaignDetail.updatesTitle')}</h2>
                 <div className="updates-list">
                   {campaign.updates.map((update, index) => (
                     <div key={index} className="update-card">
                       <div className="update-date">
-                        {new Date(update.created_at).toLocaleDateString()}
+                        {new Date(update.created_at).toLocaleDateString(locale)}
                       </div>
                       <h4>{update.title}</h4>
                       <p>{update.content}</p>
@@ -221,7 +314,7 @@ export default function CampaignDetail() {
 
             {/* Contributors Section */}
             <div className="section">
-              <h2>Contributors ({contributions.length})</h2>
+              <h2>{t('campaignDetail.contributorsTitle', { count: contributions.length })}</h2>
               {contributions.length > 0 ? (
                 <div className="contributors-list">
                   {contributions.slice(0, 10).map((contrib, index) => (
@@ -230,19 +323,19 @@ export default function CampaignDetail() {
                         {formatAddress(contrib.contributor_address)}
                       </span>
                       <span className="contributor-amount">
-                        {formatAmount(contrib.amount)} POL
+                        {formatAmount(contrib.amount)} KGST
                       </span>
                     </div>
                   ))}
                   {contributions.length > 10 && (
                     <p className="more-contributors">
-                      +{contributions.length - 10} more contributors
+                      {t('campaignDetail.moreContributors', { count: contributions.length - 10 })}
                     </p>
                   )}
                 </div>
               ) : (
                 <p className="no-contributors">
-                  No contributions yet. Be the first!
+                  {t('campaignDetail.noContributors')}
                 </p>
               )}
             </div>
@@ -253,8 +346,8 @@ export default function CampaignDetail() {
             <div className="funding-card">
               <div className="funding-amount">
                 <span className="amount">{formatAmount(campaign.total_raised)}</span>
-                <span className="unit">POL</span>
-                <span className="goal">of {formatAmount(campaign.goal_amount)} POL goal</span>
+                <span className="unit">KGST</span>
+                <span className="goal">{t('campaignDetail.goalSummary', { amount: formatAmount(campaign.goal_amount) })}</span>
               </div>
 
               <div className="progress-section">
@@ -265,8 +358,8 @@ export default function CampaignDetail() {
                   />
                 </div>
                 <div className="progress-info">
-                  <span>{calculateProgress()}% funded</span>
-                  <span>{campaign.contributor_count || 0} backers</span>
+                  <span>{t('campaignDetail.fundedProgress', { percent: calculateProgress() })}</span>
+                  <span>{t('campaignDetail.backersCount', { count: campaign.contributor_count || 0 })}</span>
                 </div>
               </div>
 
@@ -275,27 +368,60 @@ export default function CampaignDetail() {
                   className="btn btn-contribute"
                   onClick={() => isConnected ? setShowModal(true) : connect()}
                 >
-                  {isConnected ? 'Contribute' : 'Connect Wallet to Contribute'}
+                  {isConnected ? t('campaignDetail.contributeButton') : t('campaignDetail.connectToContribute')}
                 </button>
               )}
 
               {campaign.state === 'Successful' && (
                 <div className="funded-message">
-                  ✅ This campaign has been successfully funded!
+                  {t('campaignDetail.successfulMessage')}
+                </div>
+              )}
+
+              {campaign.state === 'Successful' && isFounder && (
+                <div className="founder-actions">
+                  <h3>{t('campaignDetail.founderWithdrawalTitle')}</h3>
+                  <p>{t('campaignDetail.founderWithdrawalBody')}</p>
+                  <div className="founder-withdraw-hint">
+                    {t('campaignDetail.escrowBalance', { amount: formatAmount(escrowBalance) })}
+                  </div>
+                  {canWithdraw ? (
+                    <button
+                      className="btn btn-contribute founder-withdraw-btn"
+                      onClick={handleWithdraw}
+                      disabled={withdrawing}
+                    >
+                      {withdrawing ? t('campaignDetail.withdrawingButton') : t('campaignDetail.withdrawButton')}
+                    </button>
+                  ) : (
+                    <div className="founder-withdraw-hint">
+                      {t(withdrawHint.key, withdrawHintParams)}
+                    </div>
+                  )}
+                  {withdrawTxHash && (
+                    <a
+                      href={explorerTxUrl(withdrawTxHash)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="withdraw-tx-link"
+                    >
+                      {t('campaignDetail.viewWithdrawalTx')}
+                    </a>
+                  )}
                 </div>
               )}
 
               {campaign.state === 'Failed' && (
                 <div className="failed-message">
-                  ❌ This campaign did not reach its goal.
+                  {t('campaignDetail.failedMessage')}
                 </div>
               )}
 
               <div className="funding-meta">
                 <div className="meta-row">
-                  <span className="label">Contract</span>
+                  <span className="label">{t('common.contract')}</span>
                   <a 
-                    href={`https://amoy.polygonscan.com/address/${campaign.contract_address}`}
+                    href={explorerAddressUrl(campaign.contract_address)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="contract-link"
@@ -304,11 +430,11 @@ export default function CampaignDetail() {
                   </a>
                 </div>
                 <div className="meta-row">
-                  <span className="label">Deadline</span>
+                  <span className="label">{t('common.deadline')}</span>
                   <span className="value">
                     {campaign.deadline 
-                      ? new Date(campaign.deadline).toLocaleDateString()
-                      : 'Not set'
+                      ? new Date(campaign.deadline).toLocaleDateString(locale)
+                      : t('common.notSet')
                     }
                   </span>
                 </div>
@@ -317,16 +443,16 @@ export default function CampaignDetail() {
 
             {/* Share Section */}
             <div className="share-section">
-              <h3>Share this Campaign</h3>
+              <h3>{t('campaignDetail.shareTitle')}</h3>
               <div className="share-buttons">
                 <button 
                   className="share-btn"
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
-                    toast.success('Link copied!');
+                    toast.success(t('campaignDetail.toasts.linkCopied'));
                   }}
                 >
-                  📋 Copy Link
+                  {t('campaignDetail.copyLink')}
                 </button>
               </div>
             </div>
@@ -339,32 +465,32 @@ export default function CampaignDetail() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
-            <h2>Contribute to Campaign</h2>
-            <p className="modal-subtitle">Support "{campaign.title}"</p>
+            <h2>{t('campaignDetail.modalTitle')}</h2>
+            <p className="modal-subtitle">{t('campaignDetail.modalSubtitle', { title: campaign.title })}</p>
             
             <form onSubmit={handleContribute}>
               <div className="form-group">
-                <label>Amount (POL)</label>
+                <label>{t('campaignDetail.amountLabel')}</label>
                 <input
                   type="number"
-                  step="0.001"
+                  step="1"
                   min="0"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount in POL"
+                  placeholder={t('campaignDetail.amountPlaceholder')}
                   required
                 />
               </div>
 
               <div className="quick-amounts">
-                {['0.1', '0.5', '1', '5', '10'].map(val => (
+                {['100', '500', '1000', '5000', '10000'].map(val => (
                   <button
                     key={val}
                     type="button"
                     className="quick-amount-btn"
                     onClick={() => setAmount(val)}
                   >
-                    {val} POL
+                    {val} KGST
                   </button>
                 ))}
               </div>
@@ -374,7 +500,7 @@ export default function CampaignDetail() {
                 className="btn btn-primary btn-full"
                 disabled={contributing}
               >
-                {contributing ? 'Processing...' : `Contribute ${amount || '0'} POL`}
+                {contributing ? t('common.processing') : t('campaignDetail.modalButton', { amount: amount || '0' })}
               </button>
             </form>
           </div>

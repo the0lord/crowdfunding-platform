@@ -1,0 +1,12 @@
+{
+  "network": "bscTestnet",
+  "chainId": 97,
+  "deployer": "0x99c77b768329D681f5e94711e38741e36AF3F80e",
+  "contracts": {
+    "KGST": "0x1523a1328E35782eBe096B1d12BBd9d302f3406C",
+    "CampaignImplementation": "0x329689BDa0286dE58E2339f8783F8400bfe435e1",
+    "CampaignFactory": "0xf867D4B0768558B58Da7e87b73BE3b341adC2053"
+  },
+  "isRealKGST": false,
+  "deployedAt": "2026-02-18T20:30:29.450Z"
+}

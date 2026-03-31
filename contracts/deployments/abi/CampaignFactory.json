@@ -5,10 +5,41 @@
         "internalType": "address",
         "name": "_platformWallet",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_campaignImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_paymentToken",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "FailedDeployment",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "needed",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientBalance",
+    "type": "error"
   },
   {
     "inputs": [
@@ -43,7 +74,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "campaignAddress",
+        "name": "campaign",
         "type": "address"
       },
       {
@@ -51,12 +82,6 @@
         "internalType": "address",
         "name": "moderator",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
     "name": "CampaignApproved",
@@ -68,7 +93,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "campaignAddress",
+        "name": "campaign",
         "type": "address"
       },
       {
@@ -76,12 +101,6 @@
         "internalType": "address",
         "name": "founder",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "title",
-        "type": "string"
       },
       {
         "indexed": false,
@@ -98,7 +117,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "timestamp",
+        "name": "campaignId",
         "type": "uint256"
       }
     ],
@@ -111,7 +130,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "campaignAddress",
+        "name": "campaign",
         "type": "address"
       },
       {
@@ -125,12 +144,6 @@
         "internalType": "uint256",
         "name": "flagCount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
     "name": "CampaignFlagged",
@@ -142,26 +155,14 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "campaignAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "moderator",
+        "name": "campaign",
         "type": "address"
       },
       {
         "indexed": false,
-        "internalType": "string",
+        "internalType": "bytes32",
         "name": "reason",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "name": "CampaignRejected",
@@ -177,22 +178,10 @@
         "type": "address"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "moderator",
-        "type": "address"
-      },
-      {
         "indexed": false,
         "internalType": "string",
         "name": "reason",
         "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
     "name": "FounderBlacklisted",
@@ -206,18 +195,6 @@
         "internalType": "address",
         "name": "moderator",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "addedBy",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
     "name": "ModeratorAdded",
@@ -231,18 +208,6 @@
         "internalType": "address",
         "name": "moderator",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "removedBy",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
     "name": "ModeratorRemoved",
@@ -273,6 +238,25 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "oldToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newToken",
+        "type": "address"
+      }
+    ],
+    "name": "PaymentTokenUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "oldWallet",
         "type": "address"
       },
@@ -281,16 +265,75 @@
         "internalType": "address",
         "name": "newWallet",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
     "name": "PlatformWalletUpdated",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "REJECTION_DUPLICATE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "REJECTION_FRAUD",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "REJECTION_INAPPROPRIATE",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "REJECTION_SCAM",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "REJECTION_SPAM",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -316,38 +359,6 @@
     "name": "approveCampaign",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "approvedCampaigns",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "approvedCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -388,6 +399,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "campaignImplementation",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -408,39 +432,34 @@
         "type": "address"
       },
       {
-        "internalType": "enum CampaignFactory.ModerationStatus",
+        "internalType": "uint128",
+        "name": "goalAmount",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint64",
+        "name": "createdAt",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "reviewedAt",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint8",
         "name": "status",
         "type": "uint8"
       },
       {
-        "internalType": "uint256",
-        "name": "createdAt",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "reviewedAt",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "reviewedBy",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "rejectionReason",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
+        "internalType": "uint16",
         "name": "flagCount",
-        "type": "uint256"
+        "type": "uint16"
       },
       {
-        "internalType": "bool",
-        "name": "founderVerified",
-        "type": "bool"
+        "internalType": "bytes32",
+        "name": "rejectionCode",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -566,55 +585,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_index",
-        "type": "uint256"
-      }
-    ],
-    "name": "getCampaignAtIndex",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "campaignAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "founder",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "title",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "goalAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalRaised",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum Campaign.CampaignState",
-        "name": "state",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getCampaignCount",
     "outputs": [
@@ -638,56 +608,19 @@
     "name": "getCampaignStatus",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "campaignAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "founder",
-            "type": "address"
-          },
-          {
-            "internalType": "enum CampaignFactory.ModerationStatus",
-            "name": "status",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "createdAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "reviewedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "reviewedBy",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "rejectionReason",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "flagCount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "founderVerified",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct CampaignFactory.CampaignMetadata",
-        "name": "",
-        "type": "tuple"
+        "internalType": "enum CampaignFactoryClone.ModerationStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "flagCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "rejectionCode",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -738,7 +671,7 @@
   },
   {
     "inputs": [],
-    "name": "getPendingCampaigns",
+    "name": "getFlaggedCampaigns",
     "outputs": [
       {
         "internalType": "address[]",
@@ -751,27 +684,12 @@
   },
   {
     "inputs": [],
-    "name": "getPlatformStats",
+    "name": "getPendingCampaigns",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "totalCampaigns",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "activeCampaigns",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "successfulCampaigns",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalRaised",
-        "type": "uint256"
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -843,63 +761,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_founder",
-        "type": "address"
-      }
-    ],
-    "name": "isFounderBlacklisted",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_address",
-        "type": "address"
-      }
-    ],
-    "name": "isModerator",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_campaign",
-        "type": "address"
-      }
-    ],
-    "name": "isValidCampaign",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -918,6 +779,19 @@
   {
     "inputs": [],
     "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paymentToken",
     "outputs": [
       {
         "internalType": "address",
@@ -962,27 +836,14 @@
         "type": "address"
       },
       {
-        "internalType": "string",
-        "name": "_reason",
-        "type": "string"
+        "internalType": "bytes32",
+        "name": "_reasonCode",
+        "type": "bytes32"
       }
     ],
     "name": "rejectCampaign",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "rejectedCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1006,21 +867,34 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "totalCampaignsCreated",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "_newToken",
+        "type": "address"
       }
     ],
-    "stateMutability": "view",
+    "name": "setPaymentToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_newWallet",
+        "type": "address"
+      }
+    ],
+    "name": "setPlatformWallet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "totalFundsRaised",
+    "name": "totalCampaignsCreated",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1040,32 +914,6 @@
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_founder",
-        "type": "address"
-      }
-    ],
-    "name": "unblacklistFounder",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newWallet",
-        "type": "address"
-      }
-    ],
-    "name": "updatePlatformWallet",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
