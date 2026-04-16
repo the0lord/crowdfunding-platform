@@ -31,7 +31,7 @@ export const POLYGON_AMOY = {
   chainId: 80002,
   chainIdHex: '0x13882',
   name: 'Polygon Amoy Testnet',
-  rpc: import.meta.env.VITE_POLYGON_RPC || 'https://rpc-amoy.polygon.technology/',
+  rpc: import.meta.env.VITE_POLYGON_RPC || 'https://polygon-amoy-bor-rpc.publicnode.com',
   explorer: import.meta.env.VITE_POLYGON_EXPLORER || 'https://amoy.polygonscan.com',
   currency: { name: 'POL', symbol: 'POL', decimals: 18 },
 };

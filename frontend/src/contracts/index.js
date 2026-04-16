@@ -70,6 +70,13 @@ let governanceReadProviders;
 let campaignReadProvider;
 let campaignReadProviders;
 
+function createStaticRpcProvider(rpcUrl, chainId) {
+  return new ethers.JsonRpcProvider(rpcUrl, chainId, {
+    staticNetwork: true,
+    batchMaxCount: 1,
+  });
+}
+
 // ─── Provider / Signer helpers ───
 
 /** Wrap a raw EIP-1193 provider (from Web3Auth or MetaMask) in an ethers BrowserProvider */
@@ -192,7 +199,7 @@ export function getGovernanceReadProviders() {
       : [GOVERNANCE_CHAIN.rpc];
 
     governanceReadProviders = [...new Set(rpcUrls.filter(Boolean))]
-      .map((rpcUrl) => new ethers.JsonRpcProvider(rpcUrl));
+      .map((rpcUrl) => createStaticRpcProvider(rpcUrl, GOVERNANCE_CHAIN.chainId));
   }
 
   return governanceReadProviders;
@@ -214,7 +221,7 @@ export function getCampaignReadProviders() {
       'https://data-seed-prebsc-2-s1.binance.org:8545/',
     ];
     campaignReadProviders = [...new Set(rpcUrls.filter(Boolean))]
-      .map((rpcUrl) => new ethers.JsonRpcProvider(rpcUrl));
+      .map((rpcUrl) => createStaticRpcProvider(rpcUrl, CAMPAIGN_CHAIN.chainId));
   }
   return campaignReadProviders;
 }
