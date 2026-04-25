@@ -5,6 +5,9 @@ import { CAMPAIGN_CHAIN } from '../contracts/config';
 import i18n from '../i18n';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+const TOKEN_STORAGE_KEY = 'token';
+const WALLET_SESSION_STORAGE_KEY = 'wallet_session';
+const WEB3AUTH_STORAGE_PREFIXES = ['openlogin_', 'Web3Auth-'];
 
 // Replace with your actual Web3Auth Client ID from https://dashboard.web3auth.io
 const WEB3AUTH_CLIENT_ID =
@@ -40,11 +43,122 @@ const switchProviderToBSC = async (provider) => {
   }
 };
 
+const normalizeAddress = (address) => (typeof address === 'string' ? address.trim().toLowerCase() : '');
+
+const hasSameAddress = (left, right) => {
+  const normalizedLeft = normalizeAddress(left);
+  const normalizedRight = normalizeAddress(right);
+
+  return normalizedLeft !== '' && normalizedLeft === normalizedRight;
+};
+
+const buildUserState = (userData, fallbackAddress = '') => {
+  if (!userData && !fallbackAddress) {
+    return null;
+  }
+
+  const address = normalizeAddress(userData?.address || userData?.wallet_address || fallbackAddress);
+
+  return {
+    ...(userData || {}),
+    ...(address ? { address } : {}),
+  };
+};
+
+const readStoredWalletSession = () => {
+  const rawSession = localStorage.getItem(WALLET_SESSION_STORAGE_KEY);
+  if (!rawSession) {
+    return null;
+  }
+
+  try {
+    const parsedSession = JSON.parse(rawSession);
+    if (!parsedSession?.address || !parsedSession?.walletType) {
+      return null;
+    }
+
+    return {
+      address: normalizeAddress(parsedSession.address),
+      walletType: parsedSession.walletType,
+    };
+  } catch (error) {
+    console.warn('Ignoring invalid stored wallet session:', error);
+    return null;
+  }
+};
+
+const persistWalletSession = ({ address, walletType }) => {
+  if (!address || !walletType) {
+    return;
+  }
+
+  localStorage.setItem(
+    WALLET_SESSION_STORAGE_KEY,
+    JSON.stringify({
+      address: normalizeAddress(address),
+      walletType,
+    })
+  );
+};
+
+const clearStoredWalletSession = () => {
+  localStorage.removeItem(WALLET_SESSION_STORAGE_KEY);
+};
+
+const decodeTokenPayload = (token) => {
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const [, payload = ''] = token.split('.');
+    if (!payload) {
+      return null;
+    }
+
+    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const paddedPayload = normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, '=');
+
+    return JSON.parse(atob(paddedPayload));
+  } catch {
+    return null;
+  }
+};
+
+const getTokenWalletAddress = (token) => {
+  const payload = decodeTokenPayload(token);
+  return normalizeAddress(payload?.wallet_address || payload?.sub);
+};
+
+const clearPersistedWeb3AuthStorage = () => {
+  try {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i);
+      if (key && WEB3AUTH_STORAGE_PREFIXES.some((prefix) => key.startsWith(prefix))) {
+        keysToRemove.push(key);
+      }
+    }
+
+    if (keysToRemove.length > 0) {
+      console.warn('Clearing cached Web3Auth keys after init failure:', keysToRemove);
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
+    }
+  } catch (error) {
+    console.warn('Failed to clear cached Web3Auth storage:', error);
+  }
+};
+
+const shouldRetryWeb3AuthInit = (error) => {
+  const errorText = [error?.name, error?.message, error?.stack].filter(Boolean).join(' ');
+  return errorText.includes('TorusInPageProvider');
+};
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem(TOKEN_STORAGE_KEY));
   const [isAdmin, setIsAdmin] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -52,69 +166,201 @@ export function AuthProvider({ children }) {
   const [ethProvider, setEthProvider] = useState(null);
   const [walletType, setWalletType] = useState(null); // 'web3auth' | 'metamask'
 
+  const clearTokenState = useCallback(() => {
+    setToken(null);
+    setIsAdmin(false);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+  }, []);
+
+  const clearPersistedAuth = useCallback(() => {
+    clearTokenState();
+    clearStoredWalletSession();
+  }, [clearTokenState]);
+
+  const resetWalletState = useCallback(() => {
+    setUser(null);
+    setIsAdmin(false);
+    setIsConnected(false);
+    setEthProvider(null);
+    setWalletType(null);
+  }, []);
+
+  const syncConnectedWallet = useCallback(({ address, provider, walletKind }) => {
+    const normalizedAddress = normalizeAddress(address);
+
+    setEthProvider(provider);
+    setWalletType(walletKind);
+    setUser((prev) => {
+      if (hasSameAddress(prev?.address, normalizedAddress)) {
+        return buildUserState(prev, normalizedAddress);
+      }
+
+      return buildUserState(null, normalizedAddress);
+    });
+    setIsConnected(true);
+    persistWalletSession({ address: normalizedAddress, walletType: walletKind });
+  }, []);
+
   // ─── Initialize Web3Auth on mount ───
   useEffect(() => {
+    let cancelled = false;
+
     const init = async () => {
       try {
-        // Clear any stale/corrupted Web3Auth state from previous sessions
-        // that can cause TorusInPageProvider errors
+        const createWeb3AuthClient = () => {
+          const w3a = new Web3Auth({
+            clientId: WEB3AUTH_CLIENT_ID,
+            web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET, // Change to SAPPHIRE_MAINNET for production
+            enableLogging: true, // Debug: remove in production
+          });
+
+          w3a.on('ERRORED', (error) => {
+            console.error('Web3Auth ERRORED event:', error);
+          });
+
+          return w3a;
+        };
+
+        const initializeWeb3Auth = async (retryAfterReset = false) => {
+          if (retryAfterReset) {
+            clearPersistedWeb3AuthStorage();
+          }
+
+          const w3a = createWeb3AuthClient();
+          await w3a.init();
+          return w3a;
+        };
+
+        let w3a;
         try {
-          const keysToRemove = [];
-          for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && (key.startsWith('openlogin_') || key.startsWith('Web3Auth-'))) {
-              keysToRemove.push(key);
-            }
+          w3a = await initializeWeb3Auth();
+        } catch (error) {
+          if (!shouldRetryWeb3AuthInit(error)) {
+            throw error;
           }
-          if (keysToRemove.length > 0) {
-            console.log('Clearing stale Web3Auth keys:', keysToRemove);
-            keysToRemove.forEach((k) => localStorage.removeItem(k));
-          }
-        } catch (_) { /* ignore */ }
 
-        const w3a = new Web3Auth({
-          clientId: WEB3AUTH_CLIENT_ID,
-          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET, // Change to SAPPHIRE_MAINNET for production
-          enableLogging: true, // Debug: remove in production
-        });
+          console.warn('Web3Auth init failed with cached provider state. Retrying once after cleanup.');
+          w3a = await initializeWeb3Auth(true);
+        }
 
-        // Listen for errors from the Web3Auth SDK
-        w3a.on('ERRORED', (error) => {
-          console.error('Web3Auth ERRORED event:', error);
-        });
+        if (cancelled) {
+          return;
+        }
 
-        await w3a.init();
         console.log('Web3Auth initialized. Status:', w3a.status, 'Connected:', w3a.connected);
         setWeb3auth(w3a);
 
-        // Reconnect if Web3Auth was already connected
-        if (w3a.connected && w3a.provider) {
+        const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+        const storedSession = readStoredWalletSession();
+        const tokenAddress = getTokenWalletAddress(storedToken);
+
+        if (storedSession && tokenAddress && !hasSameAddress(storedSession.address, tokenAddress)) {
+          console.warn('Stored wallet session does not match persisted token. Clearing saved auth state.');
+          clearPersistedAuth();
+          resetWalletState();
+          return;
+        }
+
+        const expectedAddress = storedSession?.address || tokenAddress;
+        const expectedWalletType = storedSession?.walletType || null;
+
+        if (!expectedAddress) {
+          return;
+        }
+
+        const restoreWeb3AuthSession = async () => {
+          if (!w3a.connected || !w3a.provider) {
+            return false;
+          }
+
           await switchProviderToBSC(w3a.provider);
-          setEthProvider(w3a.provider);
-          setWalletType('web3auth');
           const ep = new ethers.BrowserProvider(w3a.provider);
           const signer = await ep.getSigner();
           const address = await signer.getAddress();
-          setUser({ address });
-          setIsConnected(true);
-        }
-        // Or check MetaMask
-        else if (typeof window.ethereum !== 'undefined') {
-          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          if (accounts.length > 0) {
-            setEthProvider(window.ethereum);
-            setWalletType('metamask');
-            setUser({ address: accounts[0] });
-            setIsConnected(true);
+
+          if (!hasSameAddress(address, expectedAddress)) {
+            return false;
           }
+
+          if (!cancelled) {
+            syncConnectedWallet({ address, provider: w3a.provider, walletKind: 'web3auth' });
+          }
+          return true;
+        };
+
+        const restoreMetaMaskSession = async () => {
+          if (typeof window.ethereum === 'undefined') {
+            return false;
+          }
+
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          const matchingAccount = accounts.find((account) => hasSameAddress(account, expectedAddress));
+
+          if (!matchingAccount) {
+            return false;
+          }
+
+          if (!cancelled) {
+            syncConnectedWallet({ address: matchingAccount, provider: window.ethereum, walletKind: 'metamask' });
+          }
+          return true;
+        };
+
+        if (expectedWalletType === 'web3auth') {
+          const restored = await restoreWeb3AuthSession();
+          if (!restored) {
+            try {
+              if (w3a.connected) {
+                await w3a.logout();
+              }
+            } catch (_) {
+              // Ignore logout cleanup errors while dropping a stale session.
+            }
+            clearPersistedAuth();
+            resetWalletState();
+          }
+          return;
         }
+
+        if (expectedWalletType === 'metamask') {
+          const restored = await restoreMetaMaskSession();
+          if (!restored) {
+            clearPersistedAuth();
+            resetWalletState();
+          }
+          return;
+        }
+
+        if (await restoreWeb3AuthSession()) {
+          return;
+        }
+
+        if (await restoreMetaMaskSession()) {
+          return;
+        }
+
+        console.warn('Persisted auth could not be restored to the same wallet. Clearing saved auth state.');
+        clearPersistedAuth();
+        resetWalletState();
       } catch (error) {
         console.error('Web3Auth init error:', error);
+        if (!cancelled) {
+          clearPersistedAuth();
+          resetWalletState();
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
     };
+
     init();
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clearPersistedAuth, resetWalletState, syncConnectedWallet]);
 
   // ─── Fetch user from backend ───
   useEffect(() => {
@@ -132,16 +378,58 @@ export function AuthProvider({ children }) {
       });
       if (response.ok) {
         const data = await response.json();
-        setUser((prev) => ({ ...prev, ...data.user }));
+        setUser((prev) => buildUserState({ ...prev, ...data.user }, prev?.address || data.user?.wallet_address));
         setIsAdmin(data.is_admin || false);
       } else {
-        setToken(null);
-        localStorage.removeItem('token');
+        clearTokenState();
       }
     } catch (error) {
       console.error('Failed to fetch user:', error);
     }
     setLoading(false);
+  };
+
+  // ─── Login with backend (signature auth) ───
+  const login = async (address, providerInstance) => {
+    try {
+      const nonceRes = await fetch(`${API_URL}/auth/nonce?address=${address}`);
+      if (!nonceRes.ok) {
+        console.warn('Auth API not available, continuing without JWT');
+        return false;
+      }
+      const { message } = await nonceRes.json();
+
+      const ep = new ethers.BrowserProvider(providerInstance || ethProvider);
+      const signer = await ep.getSigner();
+      const signature = await signer.signMessage(message);
+
+      const loginRes = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address, signature }),
+      });
+      if (!loginRes.ok) throw new Error('Login failed');
+
+      const data = await loginRes.json();
+      const resolvedWalletType =
+        providerInstance === window.ethereum
+          ? 'metamask'
+          : providerInstance === web3auth?.provider
+            ? 'web3auth'
+            : walletType;
+
+      setToken(data.token);
+      setUser((prev) => buildUserState({ ...prev, ...data.user }, address));
+      setIsAdmin(data.is_admin || false);
+      localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
+      if (resolvedWalletType) {
+        persistWalletSession({ address, walletType: resolvedWalletType });
+      }
+      return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
   };
 
   // ─── MetaMask account change listeners ───
@@ -151,10 +439,8 @@ export function AuthProvider({ children }) {
         if (accounts.length === 0) {
           disconnect();
         } else {
-          setUser({ address: accounts[0] });
-          setIsConnected(true);
-          setToken(null);
-          localStorage.removeItem('token');
+          syncConnectedWallet({ address: accounts[0], provider: window.ethereum, walletKind: 'metamask' });
+          clearTokenState();
         }
       };
       const onChainChanged = () => window.location.reload();
@@ -167,7 +453,7 @@ export function AuthProvider({ children }) {
         window.ethereum.removeListener('chainChanged', onChainChanged);
       };
     }
-  }, [walletType]);
+  }, [walletType, clearTokenState, syncConnectedWallet]);
 
   // ─── Connect via Web3Auth (social login modal) ───
   const connect = useCallback(async () => {
@@ -176,17 +462,13 @@ export function AuthProvider({ children }) {
       return false;
     }
     if (web3auth.connected) {
-      // Already connected, just restore session
       try {
         console.log('Web3Auth already connected, restoring session...');
         await switchProviderToBSC(web3auth.provider);
         const ep = new ethers.BrowserProvider(web3auth.provider);
         const signer = await ep.getSigner();
         const address = await signer.getAddress();
-        setEthProvider(web3auth.provider);
-        setWalletType('web3auth');
-        setUser({ address });
-        setIsConnected(true);
+        syncConnectedWallet({ address, provider: web3auth.provider, walletKind: 'web3auth' });
         await login(address, web3auth.provider);
         return true;
       } catch (err) {
@@ -213,15 +495,11 @@ export function AuthProvider({ children }) {
         console.warn('Post-login chain switch failed, continuing on current chain:', switchErr);
       }
 
-      setEthProvider(w3aProvider);
-      setWalletType('web3auth');
-
       const ep = new ethers.BrowserProvider(w3aProvider);
       const signer = await ep.getSigner();
       const address = await signer.getAddress();
 
-      setUser({ address });
-      setIsConnected(true);
+      syncConnectedWallet({ address, provider: w3aProvider, walletKind: 'web3auth' });
       await login(address, w3aProvider);
       return true;
     } catch (error) {
@@ -234,7 +512,7 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [web3auth]);
+  }, [web3auth, login, syncConnectedWallet]);
 
   // ─── Connect via MetaMask ───
   const connectMetaMask = async () => {
@@ -270,10 +548,7 @@ export function AuthProvider({ children }) {
       }
 
       const address = accounts[0];
-      setUser({ address });
-      setIsConnected(true);
-      setEthProvider(window.ethereum);
-      setWalletType('metamask');
+      syncConnectedWallet({ address, provider: window.ethereum, walletKind: 'metamask' });
 
       await login(address, window.ethereum);
       return true;
@@ -285,39 +560,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Login with backend (signature auth) ───
-  const login = async (address, providerInstance) => {
-    try {
-      const nonceRes = await fetch(`${API_URL}/auth/nonce?address=${address}`);
-      if (!nonceRes.ok) {
-        console.warn('Auth API not available, continuing without JWT');
-        return false;
-      }
-      const { nonce, message } = await nonceRes.json();
-
-      const ep = new ethers.BrowserProvider(providerInstance || ethProvider);
-      const signer = await ep.getSigner();
-      const signature = await signer.signMessage(message);
-
-      const loginRes = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address, signature }),
-      });
-      if (!loginRes.ok) throw new Error('Login failed');
-
-      const data = await loginRes.json();
-      setToken(data.token);
-      setUser((prev) => ({ ...prev, ...data.user }));
-      setIsAdmin(data.is_admin || false);
-      localStorage.setItem('token', data.token);
-      return true;
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
-    }
-  };
-
   // ─── Disconnect ───
   const disconnect = async () => {
     try {
@@ -325,13 +567,8 @@ export function AuthProvider({ children }) {
     } catch (e) {
       console.error('Logout error:', e);
     }
-    setToken(null);
-    setUser(null);
-    setIsAdmin(false);
-    setIsConnected(false);
-    setEthProvider(null);
-    setWalletType(null);
-    localStorage.removeItem('token');
+    clearPersistedAuth();
+    resetWalletState();
   };
 
   // ─── Get Web3Auth User Info (email, name etc.) ───
