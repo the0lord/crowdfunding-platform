@@ -24,7 +24,11 @@ export default defineConfig({
     open: true
   },
   optimizeDeps: {
-    // Force Vite to re-bundle deps with the correct process shim
     force: true,
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
   },
 })
