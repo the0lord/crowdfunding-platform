@@ -83,15 +83,15 @@ services:
       - key: SMTP_PASSWORD
         sync: false
 
+# Managed Redis instance (must be under services, not databases)
+  - type: redis
+    name: crowdfunding-redis
+    plan: free
+    ipAllowList: []
+
 # Managed PostgreSQL database
 databases:
   - name: crowdfunding-db
     databaseName: crowdfunding
     user: postgres
     plan: free
-
-# Managed Redis instance
-  - type: redis
-    name: crowdfunding-redis
-    plan: free
-    ipAllowList: []
