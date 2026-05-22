@@ -19,6 +19,10 @@
           queueMicrotask(function() { fn.apply(null, args); });
         };
       }
+      // Polyfill CommonJS `module` — some Web3Auth deps reference it in browser context
+      if (typeof module === 'undefined') {
+        window.module = { exports: {} };
+      }
     </script>
   </head>
   <body>

@@ -14,7 +14,7 @@
  * so CJS consumers get the right thing.
  */
 
-var process = module.exports = {};
+var process = {};
 
 var cachedSetTimeout;
 var cachedClearTimeout;
@@ -141,3 +141,6 @@ process.binding = function () { throw new Error('process.binding is not supporte
 process.cwd = function () { return '/'; };
 process.chdir = function () { throw new Error('process.chdir is not supported'); };
 process.umask = function () { return 0; };
+
+export { process };
+export default process;
