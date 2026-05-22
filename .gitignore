@@ -66,6 +66,9 @@ frontend/.cache/
 backend/node_modules/
 backend/build/
 backend/dist/
+backend/server
+backend/server.exe
+backend/uploads/
 
 # Testing
 .nyc_output/

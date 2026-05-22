@@ -1,0 +1,11 @@
+.env
+.env.*
+*.md
+uploads/
+vendor/
+*.test
+*.out
+*.exe
+.git
+.gitignore
+.vscode

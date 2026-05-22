@@ -2,16 +2,39 @@ package middleware
 
 import (
 	"net/http"
+	"os"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-// CORS middleware for cross-origin requests
+// CORS middleware for cross-origin requests.
+// Set ALLOWED_ORIGINS env var to a comma-separated list of allowed origins in production
+// (e.g. "https://your-app.vercel.app"). Leave unset to allow all origins in development.
 func CORS() gin.HandlerFunc {
+	originSet := map[string]bool{}
+	if env := os.Getenv("ALLOWED_ORIGINS"); env != "" {
+		for _, o := range strings.Split(env, ",") {
+			if o = strings.TrimSpace(o); o != "" {
+				originSet[o] = true
+			}
+		}
+	}
+
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		origin := c.Request.Header.Get("Origin")
+
+		if len(originSet) == 0 {
+			// Development: allow all origins
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		} else if originSet[origin] {
+			// Production: echo back the matched origin and set Vary so caches don't serve wrong CORS headers
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			c.Writer.Header().Set("Vary", "Origin")
+		}
+
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
