@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     nodePolyfills({
       // Polyfill ALL Node builtins — Web3Auth needs many
-      globals: { Buffer: true, global: true, process: false },
+      globals: { Buffer: true, global: true, process: true },
       protocolImports: true,
       overrides: {
         // Must use our own CJS-compatible process shim.

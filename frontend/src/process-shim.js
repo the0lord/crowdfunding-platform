@@ -142,5 +142,9 @@ process.cwd = function () { return '/'; };
 process.chdir = function () { throw new Error('process.chdir is not supported'); };
 process.umask = function () { return 0; };
 
+// Ensure the global process is THIS object so CJS deps that access
+// window.process or the free variable also get nextTick and friends
+globalThis.process = process;
+
 export { process };
 export default process;
