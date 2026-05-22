@@ -19,10 +19,6 @@ export default defineConfig({
       },
     }),
   ],
-  // Some Web3Auth/CJS deps reference `module` which doesn't exist in the browser
-  define: {
-    'module': '({})',
-  },
   server: {
     port: 3000,
     open: true
