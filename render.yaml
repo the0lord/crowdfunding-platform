@@ -93,5 +93,5 @@ services:
 databases:
   - name: crowdfunding-db
     databaseName: crowdfunding
-    user: postgres
+    user: crowdfunding_user
     plan: free
